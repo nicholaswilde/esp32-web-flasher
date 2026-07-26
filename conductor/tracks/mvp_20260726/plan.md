@@ -19,9 +19,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: GitHub Integration & Dynamic Manifest
-- [ ] Task: Write Tests mocking GitHub REST API responses and manifest generation.
-- [ ] Task: Implement `js/github.js` to fetch latest releases of repositories defined in `config.json`.
-- [ ] Task: Implement logic to extract `.bin` asset URLs and dynamically generate `manifest.json`.
+- [x] Task: Write Tests mocking GitHub REST API responses and manifest generation.
+- [x] Task: Implement `js/github.js` to fetch latest releases of repositories defined in `config.json`.
+- [x] Task: Implement logic to extract `.bin` asset URLs and dynamically generate `manifest.json`.
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Manual Uploads
