@@ -6,11 +6,11 @@
 - [x] Task: Write initial `index.html` structure.
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Configuration & Theming
+## Phase 2: Configuration & Theming [checkpoint: 255f5d7]
 - [x] Task: Write Tests for configuration loading logic.
 - [x] Task: Create `config.json` and implementation in `js/config.js` to fetch and parse it on load.
 - [x] Task: Create `css/style.css` defining Catppuccin Mocha CSS variables and apply to basic layout.
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: ESP Web Tools Integration & Core UI
 - [ ] Task: Write Tests for ESP Web Tools initialization and DOM presence.
