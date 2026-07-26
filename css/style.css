@@ -31,7 +31,10 @@
 body {
   background-color: var(--base);
   color: var(--text);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
@@ -68,7 +71,7 @@ main {
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .card h2 {
@@ -104,10 +107,25 @@ button:disabled {
   cursor: not-allowed;
 }
 
-input[type="file"] {
+input[type="file"],
+input[type="text"] {
   background-color: var(--mantle);
   color: var(--text);
   padding: 0.5rem;
   border-radius: 8px;
   border: 1px solid var(--surface1);
+}
+
+.manual-upload-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.upload-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 70px 100px;
+  align-items: center;
+  gap: 0.5rem;
 }

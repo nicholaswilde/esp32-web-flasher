@@ -1,43 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A static client-side web application to flash ESP32 devices directly from your browser.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A static client-side web application to flash ESP32 devices directly from your browser."
+    />
     <title>ESP32 Web Flasher</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script type="module" src="https://unpkg.com/esp-web-tools@9.4.2/dist/web/install-button.js?module"></script>
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <script
+      type="module"
+      src="https://unpkg.com/esp-web-tools@9.4.2/dist/web/install-button.js?module"
+    ></script>
+  </head>
+  <body>
     <header>
-        <h1>ESP32 Web Flasher</h1>
-        <p>Flash your ESP32 device directly from the browser</p>
+      <h1>ESP32 Web Flasher</h1>
+      <p>Flash your ESP32 device directly from the browser</p>
     </header>
     <main>
-        <section class="card">
-            <h2>Flash Firmware</h2>
-            <div class="actions">
-                <esp-web-install-button></esp-web-install-button>
-            </div>
-        </section>
-        
-        <section class="card">
-            <h2>Automatic GitHub Release</h2>
-            <p>Fetch the latest release automatically based on configuration.</p>
-            <div class="actions">
-                <button id="fetch-github-btn" disabled>Fetch Latest Release</button>
-            </div>
-        </section>
+      <section class="card">
+        <h2>Flash Firmware</h2>
+        <div class="actions">
+          <esp-web-install-button></esp-web-install-button>
+        </div>
+      </section>
 
-        <section class="card">
-            <h2>Manual Upload</h2>
-            <p>Upload a specific .bin file to flash.</p>
-            <div class="actions">
-                <input type="file" id="manual-upload" accept=".bin" disabled>
-                <button id="upload-btn" disabled>Upload & Flash</button>
-            </div>
-        </section>
+      <section class="card">
+        <h2>Automatic GitHub Release</h2>
+        <p>Fetch the latest release automatically based on configuration.</p>
+        <div class="actions">
+          <button id="fetch-github-btn" disabled>Fetch Latest Release</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Manual Upload</h2>
+        <p>Upload specific .bin files and set their flash addresses.</p>
+        <div class="manual-upload-grid">
+          <div class="upload-row">
+            <label for="bootloader-file">Bootloader:</label>
+            <input type="file" id="bootloader-file" accept=".bin" />
+            <label for="bootloader-address">Address:</label>
+            <input
+              type="text"
+              id="bootloader-address"
+              value="0x1000"
+              placeholder="0x1000"
+            />
+          </div>
+          <div class="upload-row">
+            <label for="partitions-file">Partitions:</label>
+            <input type="file" id="partitions-file" accept=".bin" />
+            <label for="partitions-address">Address:</label>
+            <input
+              type="text"
+              id="partitions-address"
+              value="0x8000"
+              placeholder="0x8000"
+            />
+          </div>
+          <div class="upload-row">
+            <label for="firmware-file">Firmware (App):</label>
+            <input type="file" id="firmware-file" accept=".bin" />
+            <label for="firmware-address">Address:</label>
+            <input
+              type="text"
+              id="firmware-address"
+              value="0x10000"
+              placeholder="0x10000"
+            />
+          </div>
+        </div>
+        <div class="actions">
+          <button id="upload-btn" disabled>Prepare Files for Flashing</button>
+        </div>
+      </section>
     </main>
     <script type="module" src="js/app.js"></script>
-</body>
+  </body>
 </html>

@@ -1,22 +1,25 @@
-import { loadConfig } from './config.js';
+import { loadConfig } from "./config.js";
 
 export async function runConfigTests() {
-    console.log("Running config tests...");
-    const originalFetch = window.fetch;
-    
-    // Mock fetch for testing
-    window.fetch = async () => ({
-        ok: true,
-        json: async () => ({ githubRepo: "test/repo" })
-    });
+  console.log("Running config tests...");
+  const originalFetch = window.fetch;
 
-    try {
-        const config = await loadConfig();
-        console.assert(config.githubRepo === "test/repo", "Config should load mock githubRepo");
-        console.log("✅ Config tests passed!");
-    } catch (e) {
-        console.error("❌ Config tests failed:", e);
-    } finally {
-        window.fetch = originalFetch;
-    }
+  // Mock fetch for testing
+  window.fetch = async () => ({
+    ok: true,
+    json: async () => ({ githubRepo: "test/repo" }),
+  });
+
+  try {
+    const config = await loadConfig();
+    console.assert(
+      config.githubRepo === "test/repo",
+      "Config should load mock githubRepo",
+    );
+    console.log("✅ Config tests passed!");
+  } catch (e) {
+    console.error("❌ Config tests failed:", e);
+  } finally {
+    window.fetch = originalFetch;
+  }
 }

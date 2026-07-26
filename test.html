@@ -1,26 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>ESP32 Web Flasher - Tests</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Running Tests in Console</h1>
     <p>Please open the browser console (F12) to view test results.</p>
     <script type="module">
-        import { runConfigTests } from './js/config.test.js';
-        import { runUITests } from './js/ui.test.js';
-        import { runGitHubTests } from './js/github.test.js';
-        import { runUploadTests } from './js/upload.test.js';
-        
-        async function runAll() {
-            await runConfigTests();
-            await runUITests();
-            await runGitHubTests();
-            await runUploadTests();
-            console.log("All test suites completed.");
-        }
-        runAll();
+      import { runConfigTests } from "./js/config.test.js";
+      import { runUITests } from "./js/ui.test.js";
+      import { runGitHubTests } from "./js/github.test.js";
+      import { runUploadTests } from "./js/upload.test.js";
+
+      async function runAll() {
+        await runConfigTests();
+        await runUITests();
+        await runGitHubTests();
+        await runUploadTests();
+        console.log("All test suites completed.");
+      }
+      runAll();
     </script>
-</body>
+  </body>
 </html>
