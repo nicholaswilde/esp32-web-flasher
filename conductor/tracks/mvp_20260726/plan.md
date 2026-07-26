@@ -13,9 +13,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: ESP Web Tools Integration & Core UI
-- [ ] Task: Write Tests for ESP Web Tools initialization and DOM presence.
-- [ ] Task: Import `<esp-web-install-button>` script and add the component to `index.html`.
-- [ ] Task: Style the UI layout, including placeholders for GitHub fetch and manual upload sections.
+- [x] Task: Write Tests for ESP Web Tools initialization and DOM presence.
+- [x] Task: Import `<esp-web-install-button>` script and add the component to `index.html`.
+- [x] Task: Style the UI layout, including placeholders for GitHub fetch and manual upload sections.
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: GitHub Integration & Dynamic Manifest

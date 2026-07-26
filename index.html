@@ -6,6 +6,7 @@
     <meta name="description" content="A static client-side web application to flash ESP32 devices directly from your browser.">
     <title>ESP32 Web Flasher</title>
     <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="https://unpkg.com/esp-web-tools@9.4.2/dist/web/install-button.js?module"></script>
 </head>
 <body>
     <header>
@@ -13,7 +14,29 @@
         <p>Flash your ESP32 device directly from the browser</p>
     </header>
     <main>
-        <!-- Application content goes here -->
+        <section class="card">
+            <h2>Flash Firmware</h2>
+            <div class="actions">
+                <esp-web-install-button></esp-web-install-button>
+            </div>
+        </section>
+        
+        <section class="card">
+            <h2>Automatic GitHub Release</h2>
+            <p>Fetch the latest release automatically based on configuration.</p>
+            <div class="actions">
+                <button id="fetch-github-btn" disabled>Fetch Latest Release</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Manual Upload</h2>
+            <p>Upload a specific .bin file to flash.</p>
+            <div class="actions">
+                <input type="file" id="manual-upload" accept=".bin" disabled>
+                <button id="upload-btn" disabled>Upload & Flash</button>
+            </div>
+        </section>
     </main>
     <!-- JavaScript will be injected here in later phases -->
 </body>
