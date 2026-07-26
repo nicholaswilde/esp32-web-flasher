@@ -12,11 +12,11 @@
 - [x] Task: Create `css/style.css` defining Catppuccin Mocha CSS variables and apply to basic layout.
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: ESP Web Tools Integration & Core UI
+## Phase 3: ESP Web Tools Integration & Core UI [checkpoint: 7cc68f7]
 - [x] Task: Write Tests for ESP Web Tools initialization and DOM presence.
 - [x] Task: Import `<esp-web-install-button>` script and add the component to `index.html`.
 - [x] Task: Style the UI layout, including placeholders for GitHub fetch and manual upload sections.
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: GitHub Integration & Dynamic Manifest
 - [ ] Task: Write Tests mocking GitHub REST API responses and manifest generation.
