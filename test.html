@@ -13,10 +13,14 @@
         import { runGitHubTests } from './js/github.test.js';
         import { runUploadTests } from './js/upload.test.js';
         
-        runConfigTests();
-        runUITests();
-        runGitHubTests();
-        runUploadTests();
+        async function runAll() {
+            await runConfigTests();
+            await runUITests();
+            await runGitHubTests();
+            await runUploadTests();
+            console.log("All test suites completed.");
+        }
+        runAll();
     </script>
 </body>
 </html>
