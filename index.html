@@ -22,12 +22,12 @@
     <main>
       <section class="card">
         <h2>Flash Firmware</h2>
-        <div class="actions">
-          <esp-web-install-button></esp-web-install-button>
+        <div class="actions" id="install-container">
+          <esp-web-install-button manifest="data:application/json,%7B%22name%22%3A%22%22%2C%22builds%22%3A%5B%5D%7D"></esp-web-install-button>
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" style="display: none;">
         <h2>Automatic GitHub Release</h2>
         <p>Fetch the latest release automatically based on configuration.</p>
         <div class="actions">
@@ -51,17 +51,6 @@
             />
           </div>
           <div class="upload-row">
-            <label for="partitions-file">Partitions:</label>
-            <input type="file" id="partitions-file" accept=".bin" />
-            <label for="partitions-address">Address:</label>
-            <input
-              type="text"
-              id="partitions-address"
-              value="0x8000"
-              placeholder="0x8000"
-            />
-          </div>
-          <div class="upload-row">
             <label for="firmware-file">Firmware (App):</label>
             <input type="file" id="firmware-file" accept=".bin" />
             <label for="firmware-address">Address:</label>
@@ -72,10 +61,31 @@
               placeholder="0x10000"
             />
           </div>
+          <div class="upload-row">
+            <label for="partitions-file">Partitions:</label>
+            <input type="file" id="partitions-file" accept=".bin" />
+            <label for="partitions-address">Address:</label>
+            <input
+              type="text"
+              id="partitions-address"
+              value="0x8000"
+              placeholder="0x8000"
+            />
+          </div>
         </div>
         <div class="actions">
           <button id="upload-btn" disabled>Prepare Files for Flashing</button>
         </div>
+      </section>
+      <section class="card">
+        <h2>Serial Console</h2>
+        <p>View live logs from your ESP32 device directly in the browser.</p>
+        <div class="actions">
+          <button id="console-connect-btn">Connect to Console</button>
+          <button id="console-toggle-btn">Show Logs</button>
+          <button id="console-clear-btn" disabled>Clear Logs</button>
+        </div>
+        <div id="console-terminal" class="terminal-output" style="display: none;"></div>
       </section>
     </main>
     <script type="module" src="js/app.js"></script>

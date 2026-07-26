@@ -1,5 +1,6 @@
 import { fetchLatestReleaseManifest, applyManifestToButton } from "./github.js";
 import { createManifestFromFiles } from "./upload.js";
+import { initConsole } from "./console.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // GitHub logic
@@ -76,4 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Console logic
+  initConsole();
 });

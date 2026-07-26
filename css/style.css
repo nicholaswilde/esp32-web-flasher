@@ -129,3 +129,20 @@ input[type="text"] {
   align-items: center;
   gap: 0.5rem;
 }
+
+
+/* Terminal Output */
+.terminal-output {
+  background-color: var(--crust);
+  color: var(--green);
+  font-family: 'Courier New', Courier, monospace;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--surface0);
+  height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}

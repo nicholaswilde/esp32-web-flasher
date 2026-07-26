@@ -48,9 +48,14 @@ export async function fetchLatestReleaseManifest() {
 export function applyManifestToButton(manifest) {
     const manifestStr = JSON.stringify(manifest);
     const manifestUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(manifestStr);
-    const button = document.querySelector('esp-web-install-button');
-    if (button) {
-        button.setAttribute('manifest', manifestUrl);
+    let button = document.querySelector('esp-web-install-button');
+    if (!button) {
+        button = document.createElement('esp-web-install-button');
+        const container = document.getElementById('install-container');
+        if (container) {
+            container.appendChild(button);
+        }
     }
+    button.setAttribute('manifest', manifestUrl);
     return manifestUrl;
 }
