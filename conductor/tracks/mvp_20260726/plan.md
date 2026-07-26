@@ -18,11 +18,11 @@
 - [x] Task: Style the UI layout, including placeholders for GitHub fetch and manual upload sections.
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 4: GitHub Integration & Dynamic Manifest
+## Phase 4: GitHub Integration & Dynamic Manifest [checkpoint: d1276f7]
 - [x] Task: Write Tests mocking GitHub REST API responses and manifest generation.
 - [x] Task: Implement `js/github.js` to fetch latest releases of repositories defined in `config.json`.
 - [x] Task: Implement logic to extract `.bin` asset URLs and dynamically generate `manifest.json`.
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Manual Uploads
 - [ ] Task: Write Tests for file input handling and reading `.bin` files.
