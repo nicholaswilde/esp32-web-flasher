@@ -24,7 +24,7 @@
 - [x] Task: Implement logic to extract `.bin` asset URLs and dynamically generate `manifest.json`.
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 5: Manual Uploads
+## Phase 5: Manual Uploads [checkpoint: 4435169]
 - [x] Task: Write Tests for file input handling and reading `.bin` files.
 - [x] Task: Implement `js/upload.js` to handle manual file uploads and dynamically generate manifest.
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
