@@ -1,9 +1,9 @@
 # Implementation Plan: MVP/Initial Implementation
 
 ## Phase 1: Project Setup and Automation
-- [ ] Task: Initialize project structure (directories for css, js).
-- [ ] Task: Create `Taskfile.yml` for local development (serve, format, lint).
-- [ ] Task: Write initial `index.html` structure.
+- [x] Task: Initialize project structure (directories for css, js).
+- [x] Task: Create `Taskfile.yml` for local development (serve, format, lint).
+- [x] Task: Write initial `index.html` structure.
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Configuration & Theming
