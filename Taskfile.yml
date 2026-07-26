@@ -4,7 +4,7 @@ tasks:
   serve:
     desc: Serve the static site locally on port 8000
     cmds:
-      - python3 -m http.server 8000
+      - uv run python -m http.server 8000
 
   format:
     desc: Format code using Prettier
