@@ -1,2 +1,2 @@
 ---
-- [ ] **Track: MVP/Initial Implementation** *Link: [./tracks/mvp_20260726/index.md](./tracks/mvp_20260726/index.md)*
+- [~] **Track: MVP/Initial Implementation** *Link: [./tracks/mvp_20260726/index.md](./tracks/mvp_20260726/index.md)*
