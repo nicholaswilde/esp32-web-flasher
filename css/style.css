@@ -108,13 +108,35 @@ footer {
 @media (max-width: 600px) {
   .footer-content {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    text-align: center;
   }
+  .footer-left {
+    align-items: center;
+  }
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 
 footer p {
   margin: 0;
   font-size: 0.9rem;
+  color: var(--subtext0);
+}
+
+.powered-by {
+  font-size: 0.6rem;
+  color: var(--overlay0);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.powered-by:hover {
   color: var(--subtext0);
 }
 
