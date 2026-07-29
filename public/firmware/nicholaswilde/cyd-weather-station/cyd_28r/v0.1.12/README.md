@@ -1,0 +1,341 @@
+# :partly_sunny: CYD Weather Station :pager:
+[![Coveralls](https://img.shields.io/coveralls/github/nicholaswilde/cyd-weather-station/main?style=for-the-badge&logo=coveralls)](https://coveralls.io/github/nicholaswilde/cyd-weather-station?branch=main)
+[![task](https://img.shields.io/badge/Task-Enabled-brightgreen?style=for-the-badge&logo=task&logoColor=white)](https://taskfile.dev/#/)
+[![test](https://img.shields.io/github/actions/workflow/status/nicholaswilde/cyd-weather-station/test.yaml?label=test&style=for-the-badge&branch=main&logo=github-actions)](https://github.com/nicholaswilde/cyd-weather-station/actions/workflows/test.yaml)
+[![ci](https://img.shields.io/github/actions/workflow/status/nicholaswilde/cyd-weather-station/ci.yaml?label=ci&style=for-the-badge&branch=main&logo=github-actions)](https://github.com/nicholaswilde/cyd-weather-station/actions/workflows/ci.yaml)
+
+A beautiful, configurable real-time weather station and desk clock built for the **ESP32 Cheap Yellow Device (CYD)** (board model ESP32-2432S028R) utilizing the **LVGL v8** graphics library, **Open-Meteo / OpenWeatherMap APIs**, and the **Catppuccin Color Theme**.
+
+> [!WARNING]
+> This project is currently in a `v0.X.X` development stage. Features and configurations are subject to change, and breaking changes may be introduced at any time.
+
+## :star: Features
+
+- **Dual API Integration**: 
+  - **Open-Meteo API**: Out-of-the-box fallback — no API key required.
+  - **OpenWeatherMap API**: Automatically used if an API key is configured.
+- **Location Resolution & City Name Footer**:
+  - Displays `Last Update: <time> | <city name>` centered at the bottom of the screen.
+  - **Zip Code Geocoding**: Enter a US Zip Code (e.g. `90210`); coordinates are resolved on boot.
+  - **IP Geolocation Fallback**: Automatically falls back to resolving location via IP geolocation (using `ip-api.com`) on boot if Zip Code and coordinates are left blank.
+  - **Reverse Geocoding**: When using coordinates + Open-Meteo, the city is resolved using Nominatim OSM. OWM resolves and returns the city name natively.
+- **3-Day Forecast View**: Swipe to a dedicated Forecast tab showing daily high/low temperature and weather condition icons.
+- **Swipe Navigation**: Swipe left/right anywhere on the screen to switch between the Current, Forecast, and Settings tabs.
+- **Dynamic Weather Icons**: A large (48px) custom weather glyph maps weather codes to condition icons, dynamically colored using the active Catppuccin palette.
+- **Interactive Settings Tab**: Touch-configurable settings persisted to flash across reboots:
+  - **Temperature Unit**: Toggle between Celsius (°C) and Fahrenheit (°F).
+  - **Catppuccin Theme Flavor**: Choose between Mocha, Macchiato, Frappé, or Latte — the full UI redraws instantly in the selected palette.
+  - **Auto Brightness**: Toggle automatic backlight dimming/brightening driven by the onboard LDR light sensor (GPIO 34).
+  - **Manual Brightness**: Slider to set a fixed screen brightness level (when Auto is off).
+  - **Timezone Offset**: `–` / `+` buttons to set a GMT offset (–12 to +14) for the NTP clock.
+  - **SD Log**: Enable/disable weather logging to a microSD card.
+  - **SD Cache**: Enable/disable weather caching to a microSD card (restores UI offline).
+  - **Screenshot Server**: Enable/disable the remote screenshot HTTP server.
+  - **MQTT**: Toggle publishing weather variables to MQTT topics.
+  - **Screensaver**: Enable/disable screensaver mode (dims backlight and displays clock after inactivity).
+  - **Screen Orientation**: Choose between Landscape, Portrait, Landscape Rev, or Portrait Rev—the entire UI dynamically scales/stacks, header height dynamically increases to 60px in portrait to fit a wrapped two-line title without overlaps, and touch coordinates update instantly.
+- **Auto-Brightness Control**: Uses the LDR photoresistor (GPIO 34) with an EMA filter feeding LEDC PWM (GPIO 21) to smoothly adapt screen brightness to ambient light.
+- **NTP Time Synchronization**: Connects to NTP on boot and keeps a live clock in the header bar, respecting the configured timezone offset.
+- **RGB LED Status Indicator**: Onboard RGB LED (GPIO 4/16/17) provides Wi-Fi status feedback (blinking blue for connecting, solid green for connected, fast red for disconnected, slow purple blink for AP Mode) and a brief weather-condition color pulse on updates.
+- **Improv Wi-Fi Serial Provisioning**: Configure Wi-Fi credentials directly over a serial connection using the [Improv Wi-Fi](https://www.improv-wifi.com/) standard.
+- **Wi-Fi AP Captive Portal Fallback**:
+  - Automatically hosts an open Soft AP (`cyd-weather-station-<mac_short>`) if connection fails or times out after 30 seconds on boot.
+  - Runs a captive portal configuration web server and DNS redirector on `192.168.4.1` for selecting networks, setting Wi-Fi credentials, and configuring your location (Zip Code or Coordinates).
+  - Runs background async Wi-Fi scans after AP initialization to prevent client disconnections (common on ESP32 during active/blocking scans).
+  - Web interface `/scan` triggers background scanning with a friendly redirect loader screen, displaying updated networks on completion.
+  - Dynamically displays step-by-step connection instructions (SSID name and IP address) directly on the screen while AP Mode is active.
+  - Colors the header Wi-Fi icon **Mauve** when in setup configuration mode.
+- **SD Card Weather Logging**:
+  - Automatically mounts a microSD card on boot and appends weather records (timestamp, temperature, humidity, wind speed, wind direction, weather code) to `/weather_history.csv` on the root of the card.
+  - Automatic formatting fallback to FAT32 on mount failure.
+- **Screenshot Capture**:
+  - **Remote via HTTP**: `GET /screenshot` streams a pixel-perfect 24-bit BMP of the current screen directly over Wi-Fi.
+  - **Physical button**: Press and hold the BOOT button (GPIO 0) for 2 seconds to save a timestamped BMP to the SD card as `/screenshot_YYYYMMDD_HHMMSS.bmp`. A single quick press of the BOOT button triggers an immediate weather refresh.
+  - Zero large-allocation design — screen tiles are intercepted from the LVGL flush callback and written directly to file.
+  - Toggle the screenshot server on/off from the **Settings tab** (`API Srv`).
+- **SD Offline Cache Recovery**:
+  - Automatically caches the latest retrieved weather data to `/weather_cache.json` on the microSD card.
+  - If the device boots without Wi-Fi, it restores the weather screen from the cache instead of displaying blank widgets, displaying a `⚠️ Offline` status badge in the header.
+- **Wireless OTA Firmware Updates**:
+  - Easily update firmware wirelessly by navigating to `/update` in a browser when connected to the configuration AP (`http://192.168.4.1/update`) or the local network IP (`http://<DEVICE_IP>/update` when the Screenshot Server is enabled).
+  - Portal features a responsive Catppuccin-themed HTML interface, drag-and-drop binary selector, dynamic progress bar, error handling, and auto-reboot upon completion.
+
+
+## :hammer_and_wrench: Hardware Requirements
+
+- **ESP32 Cheap Yellow Device (CYD)**: ESP32-2432S028R — 2.8″ 320×240 ILI9341 LCD with XPT2046 resistive touch.
+- **Onboard Sensors**: LDR photoresistor (GPIO 34), Backlight PWM (GPIO 21), RGB LED (GPIO 4/16/17), BOOT button (GPIO 0).
+- **Storage**: MicroSD card slot (compatible with standard FAT32 formatted cards).
+- Micro-USB cable for power and programming.
+
+## :floppy_disk: MicroSD Card Logging & Auto-Formatting
+
+The weather station periodically logs weather reports to a microSD card in CSV format.
+
+> [!WARNING]
+> **Auto-Formatting Warning:** If the inserted microSD card fails to mount (e.g., if it is formatted as exFAT or uses a GPT partition scheme), the firmware will **automatically format the card to FAT32** on boot. This will **permanently delete all existing data** on the card.
+> 
+> To prevent data loss, ensure that any card you insert is either empty, or pre-formatted as **FAT32** with a **Master Boot Record (MBR)** partition scheme (GUID/GPT partition tables are not supported).
+
+## :camera: Screenshots
+
+### Device UI Showcase
+
+| Screen | Landscape (320x240) | Portrait (240x320) |
+|---|---|---|
+| **Current Weather** | ![Landscape Current](screenshots/landscape_current.png) | ![Portrait Current](screenshots/portrait_current.png) |
+| **3-Day Forecast** | ![Landscape Forecast](screenshots/landscape_forecast.png) | ![Portrait Forecast](screenshots/portrait_forecast.png) |
+| **24-Hour Forecast** | ![Landscape Hourly](screenshots/landscape_hourly.png) | ![Portrait Hourly](screenshots/portrait_hourly.png) |
+| **System Settings** | ![Landscape Settings](screenshots/landscape_settings.png) | ![Portrait Settings](screenshots/portrait_settings.png) |
+
+The device supports capturing the current screen as a standard 24-bit BMP image via two methods:
+
+### Remote HTTP API & Screen Capture
+
+> [!NOTE]
+> The screenshot server must be enabled in the **Settings tab** (`API Srv` toggle) and Wi-Fi must be connected. The device IP is printed to serial on boot: `[WiFi] Connected! IP address: <IP>`.
+
+**Capture Screenshot:**
+```bash
+# Save to file
+curl http://<DEVICE_IP>/screenshot -o screenshot.bmp
+
+# View inline (if ImageMagick is installed)
+curl -s http://<DEVICE_IP>/screenshot | display -
+```
+
+**Get Configuration Settings:**
+Retrieve the current settings in JSON format:
+```bash
+curl http://<DEVICE_IP>/api/config
+```
+
+Example JSON response:
+```json
+{
+  "unit_system": 2,
+  "brightness": 255,
+  "auto_brightness": false,
+  "timezone_offset": -8,
+  "dst_enabled": true,
+  "theme_flavor": 0,
+  "sd_logging_enabled": false,
+  "screenshot_server_enabled": true,
+  "screen_orientation": 1,
+  "led_enabled": true,
+  "led_brightness": 255,
+  "mqtt_enabled": false,
+  "wifi_ssid": "Your_SSID",
+  "sd_cache_enabled": false,
+  "screensaver_enabled": true
+}
+```
+
+### Physical BOOT button capture
+
+Press and hold the **BOOT button** (GPIO 0) on the CYD board for 2 seconds. The screenshot is saved to the SD card root as `/screenshot_YYYYMMDD_HHMMSS.bmp` (NTP-synced timestamp). A single quick press of the BOOT button triggers an immediate weather refresh.
+
+Serial output confirms the save:
+```
+[System] BOOT button pressed. Taking screenshot...
+[Screenshot] Capture started: /screenshot_20260711_135852.bmp
+[Screenshot] Capture complete.
+```
+
+---
+
+## :rocket: Getting Started
+
+### 1. Quick Install (Pre-compiled Binaries)
+
+You can flash the device directly from your terminal using the provided flash script. Replace `/dev/ttyUSB0` with your actual serial port. By default, it flashes the `cyd_28r` version, but you can specify the device as the first argument.
+
+```bash
+# Flash the default cyd_28r (320x240 screen)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/nicholaswilde/cyd-weather-station/main/scripts/flash.sh)" _ cyd_28r /dev/ttyUSB0
+
+# Or flash the cyd_35c version (480x320 screen)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/nicholaswilde/cyd-weather-station/main/scripts/flash.sh)" _ cyd_35c /dev/ttyUSB0
+```
+
+> [!WARNING]
+> Running a script directly from the internet with `bash -c "$(curl...)"` is a potential security risk. Always review the script's source code before executing it to ensure it is safe. You can view the script [here](https://github.com/nicholaswilde/cyd-weather-station/blob/main/scripts/flash.sh).
+
+### 2. Build from Source
+
+#### Secrets Setup
+
+Wi-Fi credentials and API keys live in a Git-ignored secrets file to prevent committing them.
+
+1. Copy the template:
+   ```bash
+   task init
+   ```
+   *(Or manually: `cp config/secrets.h.example config/secrets.h`)*
+
+2. Edit `config/secrets.h`:
+   ```cpp
+   #define WIFI_SSID     "Your_WiFi_Network"
+   #define WIFI_PASSWORD "Your_WiFi_Password"
+
+   // (Optional) Secure the configuration AP with a password (at least 8 chars).
+   // Leave blank ("") or comment out to run an open Access Point.
+   #define AP_PASSWORD ""
+
+   // (Optional) Set your API key here to use OpenWeatherMap instead of Open-Meteo.
+   // If left empty (""), Open-Meteo API will be used as a fallback.
+   #define OPENWEATHERMAP_API_KEY "YOUR_OPENWEATHERMAP_API_KEY"
+   ```
+
+#### Configuration
+
+Static settings (location, update interval) live in [`config/config.h`](config/config.h). Runtime user preferences (units, brightness, theme, timezone) are changed via the on-device **Settings tab** and saved to flash.
+
+**Location:**
+Location (Zip Code or Coordinates) is configured dynamically via the **Captive Portal Wi-Fi Manager** when the device boots in AP mode. You can pre-configure the fallback defaults in `config/config.h`:
+```cpp
+// Default values (if not configured via Wi-Fi Setup)
+#define WEATHER_ZIP_CODE  "90210"
+#define WEATHER_API_LATITUDE  ""
+#define WEATHER_API_LONGITUDE ""
+```
+*(Note: If you leave these fields empty in both the code and the Wi-Fi Setup page, the device will automatically detect your location via IP Geolocation).*
+
+**Weather update interval:**
+```cpp
+#define WEATHER_UPDATE_INTERVAL_MINS 15
+```
+
+**Screensaver:**
+```cpp
+#define SCREENSAVER_ENABLED     true
+#define SCREENSAVER_TIMEOUT_MS  300000 // 5 minutes (in milliseconds)
+```
+
+**Static IP:**
+Uncomment the static IP settings block in `config/config.h` to assign a static IP to the device. If kept commented out, the device will default to DHCP:
+```cpp
+// #define STATIC_IP          "192.168.1.100"
+// #define STATIC_GATEWAY     "192.168.1.1"
+// #define STATIC_SUBNET      "255.255.255.0"
+// #define STATIC_DNS         "1.1.1.1"
+```
+
+**Display performance** — tune animation smoothness vs. touch responsiveness:
+```cpp
+// Height of the LVGL draw buffer (pixel rows).
+// Larger = smoother animation; too large = unresponsive touch.
+// Sweet spot on CYD hardware: 25–35.
+#define DISPLAY_DRAW_BUF_ROWS 30
+
+// How often LVGL redraws changed areas (ms). Range: 10–30.
+#define DISPLAY_REFR_PERIOD_MS 20
+
+// How often LVGL polls the touchscreen (ms). Keep <= DISPLAY_REFR_PERIOD_MS.
+#define DISPLAY_INDEV_READ_PERIOD_MS 10
+
+// Duration of the tab-switch swipe animation (ms). LVGL default: 300.
+#define DISPLAY_SWIPE_ANIM_MS 150
+```
+
+#### Build & Upload
+
+```bash
+task build    # Compile firmware
+task upload   # Flash to the connected CYD board
+task monitor  # Open serial monitor (115200 baud)
+```
+
+---
+
+## :gear: Settings Tab Reference
+
+All settings below are configured by touch on the device and saved to flash:
+
+| Setting | Description |
+| :--- | :--- |
+| **Unit (C/F)** | Toggle between Celsius and Fahrenheit. |
+| **Auto Light** | Enable/disable LDR-driven automatic backlight control. |
+| **Brightness** | Manual backlight level slider (disabled when Auto Light is on). |
+| **Theme** | Catppuccin flavor selector — Mocha / Macchiato / Frappé / Latte. Full UI redraws on change. |
+| **Timezone** | GMT offset (– / + buttons, range –12 to +14). |
+| **DST** | Toggle Daylight Saving Time on/off (adds 1 hour to NTP offset when enabled). |
+| **SD Log** | Toggle SD card weather logging. Disabled automatically if no card is inserted. |
+| **SD Cache** | Toggle SD card weather caching. |
+| **API Srv** | Toggle the remote screenshot & configuration HTTP API server on/off. |
+| **Scr Saver** | Toggle the screensaver on/off. |
+| **MQTT** | Toggle publishing weather variables to MQTT topics. |
+
+---
+
+## :computer: Development
+
+This project is built with **PlatformIO** and supports both ESP32 hardware builds and native desktop mock testing via a CMock/Unity test suite.
+
+### Custom Weather Icon Font
+
+Weather icons use Erik Flowers' Weather Icons font converted to LVGL C source via `lv_font_conv`.
+
+1. Install Node.js dependencies:
+   ```bash
+   task setup:node
+   ```
+2. Regenerate the font:
+   ```bash
+   task font:generate
+   ```
+
+### Command Reference
+
+| Action | Task Command | PlatformIO Equivalent | Description |
+| :--- | :--- | :--- | :--- |
+| **Initialize** | `task init` | `cp config/secrets.h.example config/secrets.h` | Copies the secrets template. |
+| **Build** | `task build` | `pio run` | Compiles the ESP32 firmware. |
+| **Upload** | `task upload` | `pio run --target upload` | Flashes firmware to the CYD board. |
+| **Monitor** | `task monitor` | `pio device monitor` | Opens the serial monitor at 115200 baud. |
+| **Native Tests** | `task test` | `pio test -e native` | Runs mock unit tests on the host. |
+| **Lint Check** | `task check` | `pio check` | Runs `cppcheck` static analysis. |
+| **Setup Node** | `task setup:node` | `npm install` | Installs `lv_font_conv` for font conversion. |
+| **Generate Font** | `task font:generate` | `npm run font:generate` | Rebuilds the weather icons C source from TTF. |
+| **Clean** | `task clean` | `pio run --target clean` | Removes build output and temp files. |
+
+## :wrench: Troubleshooting
+
+If you encounter any issues with your screen or the software, please review the solutions below or [create an issue](https://github.com/nicholaswilde/cyd-weather-station/issues) on GitHub if you are still stuck.
+
+### Inverted Colors
+If the colors on your display appear inverted, this is a common issue with some batches of the CYD TFT screens. You can easily resolve it by:
+- Flashing the pre-compiled `_inv` releases (e.g. `cyd-weather-station-v0.1.7-cyd_28r_inv.zip` or `cyd_35c_inv.zip`).
+- Or, if building from source, using the `cyd_28r_inv` or `cyd_35c_inv` PlatformIO environments. These environments automatically enable the `TFT_INVERSION_ON=1` build flag.
+
+### RGB / BGR Swap
+If your screen has red and blue colors swapped, it means the display expects a BGR color order instead of RGB. A dedicated release is not currently provided for this variation, but you can fix it by building from source: simply append `-D TFT_RGB_ORDER=TFT_BGR` to your environment's `build_flags` in `platformio.ini`.
+
+### Touch Calibration (Resistive Screens)
+The 2.8" version (`cyd_28r`) uses a resistive touch layer which can sometimes be misaligned or mapped to inverted coordinates depending on the batch. If touches are registering in the wrong place, you may need to run a touch calibration sketch to determine the correct offsets for your specific screen.
+
+### Backlight Pin and Polarity Differences
+If your screen is completely black but the board seems to be running, it might be a backlight pin mapping issue. While most boards use GPIO 21 or 27 for the backlight (`TFT_BL`), some obscure batches might map it differently. Furthermore, some boards require `TFT_BACKLIGHT_ON=LOW` instead of `HIGH`. 
+
+### Different Driver Chips
+Most 2.8" screens use the `ILI9341` driver. However, occasionally manufacturers substitute it with an `ST7789V` driver without changing the board's appearance. This will result in a completely blank or noisy screen until you change the driver flag in your `platformio.ini` from `-D ILI9341_DRIVER=1` to `-D ST7789_DRIVER=1`.
+
+### SD Card Formatting
+The CYD board can be picky about SD cards. If you encounter a "Failed to initialize SD card" error:
+- Ensure the microSD card is formatted as **FAT32** (not exFAT).
+- Try to use an SD card that is 32GB or smaller.
+- Ensure it is inserted fully before booting the device.
+
+### Power Delivery Glitches
+Intermittent touch issues, screen flickering, or spontaneous reboots are frequently caused by inadequate power. Ensure you are using a high-quality USB power supply and a good USB cable that can supply the burst current the ESP32 and backlight need simultaneously.
+
+### Audio Output / DAC Pins
+If you ever intend to use the speaker connector on the back, be aware that the DAC pin mapping changes between board revisions. Sometimes it's mapped to GPIO 25, and sometimes GPIO 26.
+
+## :balance_scale: License
+
+[Apache License 2.0](LICENSE)
+
+## :writing_hand: Author
+
+This project was started in 2026 by [Nicholas Wilde](https://github.com/nicholaswilde/).

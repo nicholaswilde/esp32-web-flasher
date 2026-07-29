@@ -1,0 +1,28 @@
+{
+  "githubRepo": "nicholaswilde/esp32-web-flasher",
+  "githubRepos": {
+    "nicholaswilde/cyd-weather-station": {
+      "addresses": {
+        "bootloader": "0x1000",
+        "partitions": "0x8000",
+        "app": "0x10000"
+      }
+    },
+    "nicholaswilde/cyd-photo-frame": {
+      "addresses": {
+        "bootloader": "0x1000",
+        "partitions": "0x8000",
+        "app": "0x10000"
+      }
+    }
+  },
+  "version": "v1.0.0",
+  "copyrightOwner": "Nicholas Wilde",
+  "copyrightLink": "https://github.com/nicholaswilde",
+  "copyrightYear": "2026",
+  "defaultAddresses": {
+    "bootloader": "0x1000",
+    "partitions": "0x8000",
+    "app": "0x10000"
+  }
+}

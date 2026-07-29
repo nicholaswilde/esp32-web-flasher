@@ -4,9 +4,19 @@ tasks:
   serve:
     desc: Serve the static site locally on port 8000
     cmds:
-      - uv run python -m http.server 8000
+      - uv run python -m http.server -d public 8000
 
   format:
     desc: Format code using Prettier
     cmds:
       - npx prettier --write "**/*.{html,css,js,json}"
+
+  download:
+    desc: Download and extract firmware releases
+    cmds:
+      - bash scripts/download_releases.sh
+
+  add-repo:
+    desc: Add a new GitHub repository to the project and download its releases
+    cmds:
+      - bash scripts/add_repo.sh {{.CLI_ARGS}}

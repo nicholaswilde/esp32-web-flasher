@@ -4,32 +4,58 @@ A static, client-side web application to flash ESP32 devices directly from your 
 
 ## Features
 
-- **Automatic GitHub Releases:** Dynamically fetch and extract `.zip` firmware from GitHub releases via a simple configurable dropdown interface.
+- **Local Firmware Library:** Browse and flash pre-downloaded firmware releases from the local `firmware/` directory via a simple dropdown interface.
 - **Direct Web Flashing:** Flash your ESP32 device directly from the browser without needing the Arduino IDE or command-line tools.
 - **Manual Firmware Upload:** Select individual `.bin` files (Bootloader, Firmware App, and Partitions) and upload them to custom hex memory addresses (defaults to `0x1000`, `0x10000`, and `0x8000`).
 - **Web Serial Console:** A built-in live terminal to view output logs straight from the ESP32. Extremely useful for verifying successful boots and debugging without needing external serial monitors.
 - **Cross-Platform:** Works entirely locally on any Web Serial-compatible browser (Google Chrome, Microsoft Edge, Opera).
 
-## Automatic GitHub Release & CORS Limitations
-
-This app can fetch firmware directly from GitHub Releases by selecting a repository, version, and device. This feature utilizes an array of free public CORS proxies to bypass the browser's CORS restrictions when downloading release assets (like `.zip` files). 
-
-**Important Note on CORS Proxies:**
-Because free CORS proxies often impose strict rate limits or block large files (e.g., >1MB) to save bandwidth, you might occasionally encounter `429 Too Many Requests` or `403 Forbidden` errors in the console, causing the "Load Release" action to fail. 
-- **Temporary Fix:** If you hit a `429` rate limit, simply wait a few minutes for your IP to be unblocked and try again. The app is programmed to automatically fall back through multiple proxies to maximize reliability.
-- **Production Solution 1 (Recommended):** Host your raw `.bin` files directly on a `gh-pages` branch instead of GitHub Releases. GitHub Pages natively serves files with the proper CORS headers, completely eliminating the need for a proxy.
-- **Production Solution 2:** Deploy your own free Cloudflare Worker to act as a private, unrestricted CORS proxy, and update the proxy list in `js/github.js`.
-
 ## Usage
 
-Since this is a client-side application, it can be run by serving the directory locally or hosting it on any static web server (like GitHub Pages).
+Since this is a client-side application, it can be run by serving the directory locally or hosting it on any static web server (like GitHub Pages). To populate the firmware library, use the provided download script.
+
+### Downloading Firmware
+
+The application reads available releases from `firmware/index.json`. To download recent releases from all configured GitHub repositories and generate the index, run:
+
+```bash
+task download
+```
+*(This script uses the `gh` CLI to download releases and extracts them into the `firmware/` directory).*
+
+### Adding Repositories
+
+To add a new repository to the firmware library, run:
+
+```bash
+task add-repo -- <org/repo>
+```
+
+This updates `config.json` and automatically downloads its available releases.
+
+### Per-Repository Addresses
+
+By default, the web flasher uses standard ESP32 flash addresses (Bootloader: `0x1000`, Partitions: `0x8000`, App: `0x10000`). If a specific repository requires custom flash offsets, you can override them in `config.json` under `githubRepos`:
+
+```json
+  "githubRepos": {
+    "nicholaswilde/custom-project": {
+      "addresses": {
+        "bootloader": "0x0000",
+        "partitions": "0x8000",
+        "app": "0x10000"
+      }
+    }
+  }
+```
+
 
 ### Running Locally
 
 You can use Python to spin up a quick local web server:
 
 ```bash
-python3 -m http.server 8000
+task serve
 ```
 
 1. Open your browser and navigate to `http://localhost:8000`.
