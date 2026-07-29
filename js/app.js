@@ -1,11 +1,12 @@
-import { fetchLatestReleaseManifest, applyManifestToButton } from "./github.js";
+import { fetchReleases, fetchReleaseManifest, applyManifestToButton } from "./github.js?v=5";
 import { createManifestFromFiles } from "./upload.js";
 import { initConsole } from "./console.js";
 import { loadConfig } from "./config.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
+  let config = {};
   try {
-    const config = await loadConfig();
+    config = await loadConfig();
     const repoLink = document.getElementById("repo-link");
     if (config.githubRepo && repoLink) {
       repoLink.href = `https://github.com/${config.githubRepo}`;
@@ -39,17 +40,74 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // GitHub logic
   const fetchBtn = document.getElementById("fetch-github-btn");
-  if (fetchBtn) {
-    fetchBtn.disabled = false;
+  const repoSelect = document.getElementById("github-repo-select");
+  const versionSelect = document.getElementById("github-version-select");
+  const deviceSelect = document.getElementById("github-device-select");
+  let currentReleases = [];
+
+  if (fetchBtn && repoSelect && versionSelect && deviceSelect && config.githubRepos) {
+    config.githubRepos.forEach(repo => {
+      const opt = document.createElement("option");
+      opt.value = repo;
+      opt.textContent = repo;
+      repoSelect.appendChild(opt);
+    });
+
+    if (config.devices) {
+      config.devices.forEach(device => {
+        const opt = document.createElement("option");
+        opt.value = device;
+        opt.textContent = device;
+        deviceSelect.appendChild(opt);
+      });
+    }
+
+    const loadVersions = async () => {
+      const repo = repoSelect.value;
+      if (!repo) return;
+      versionSelect.disabled = true;
+      versionSelect.innerHTML = "<option>Loading...</option>";
+      fetchBtn.disabled = true;
+      
+      try {
+        currentReleases = await fetchReleases(repo);
+        versionSelect.innerHTML = "";
+        currentReleases.forEach(r => {
+          const opt = document.createElement("option");
+          opt.value = r.tag_name;
+          opt.textContent = r.tag_name;
+          versionSelect.appendChild(opt);
+        });
+        versionSelect.disabled = false;
+        fetchBtn.disabled = false;
+      } catch (e) {
+        console.error(e);
+        versionSelect.innerHTML = "<option>Error loading versions</option>";
+      }
+    };
+
+    repoSelect.addEventListener("change", loadVersions);
+    
+    if (config.githubRepos.length > 0) {
+      loadVersions();
+    }
+
     fetchBtn.addEventListener("click", async () => {
       try {
-        fetchBtn.textContent = "Fetching...";
-        const manifest = await fetchLatestReleaseManifest();
+        fetchBtn.textContent = "Loading Release...";
+        const repo = repoSelect.value;
+        const version = versionSelect.value;
+        const device = deviceSelect.value;
+        
+        const release = currentReleases.find(r => r.tag_name === version);
+        if (!release) throw new Error("Release not found");
+
+        const manifest = await fetchReleaseManifest(repo, release, device);
         applyManifestToButton(manifest);
         fetchBtn.textContent = "Loaded: " + manifest.version;
       } catch (e) {
         console.error(e);
-        fetchBtn.textContent = "Error fetching release";
+        fetchBtn.textContent = "Error loading release";
       }
     });
   }

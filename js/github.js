@@ -1,38 +1,82 @@
 import { loadConfig } from "./config.js";
 
-export async function fetchLatestReleaseManifest() {
-  const config = await loadConfig();
-  const repo = config.githubRepo;
-
-  const response = await fetch(
-    `https://api.github.com/repos/${repo}/releases/latest`,
-  );
+export async function fetchReleases(repo) {
+  const response = await fetch(`https://api.github.com/repos/${repo}/releases`);
   if (!response.ok) {
-    throw new Error("Failed to fetch latest release from GitHub");
+    throw new Error("Failed to fetch releases from GitHub");
   }
-  const release = await response.json();
+  return await response.json();
+}
 
-  const binAssets = release.assets.filter((a) => a.name.endsWith(".bin"));
-  if (binAssets.length === 0) {
-    throw new Error("No .bin assets found in the latest release");
+export async function fetchReleaseManifest(repo, release, device) {
+  const config = await loadConfig();
+
+  // Filter assets by the selected device name if provided.
+  let targetAssets = release.assets.filter((a) => a.name.match(/\.(bin|zip)$/i));
+  if (device) {
+    targetAssets = targetAssets.filter((a) => a.name.toLowerCase().includes(device.toLowerCase()));
+  }
+
+  if (targetAssets.length === 0) {
+    throw new Error(`No firmware assets found for device ${device} in this release`);
   }
 
   let parts = [];
-  for (const asset of binAssets) {
-    let offset = config.defaultAddresses.app;
-    if (asset.name.toLowerCase().includes("bootloader")) {
-      offset = config.defaultAddresses.bootloader;
-    } else if (asset.name.toLowerCase().includes("partition")) {
-      offset = config.defaultAddresses.partitions;
+  
+  function getProxiedUrl(url) {
+    return `https://cors.eu.org/${url}`;
+  }
+  
+  const zipAsset = targetAssets.find(a => a.name.endsWith(".zip"));
+  
+  if (zipAsset) {
+    console.log("Fetching and extracting zip asset:", zipAsset.name);
+    const proxyUrl = getProxiedUrl(zipAsset.browser_download_url);
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error("Failed to download zip file");
+    const arrayBuffer = await res.arrayBuffer();
+    // JSZip is loaded globally in index.html
+    const zip = await window.JSZip.loadAsync(arrayBuffer);
+    
+    for (const [filename, file] of Object.entries(zip.files)) {
+      if (filename.endsWith(".bin") && !file.dir) {
+        const blob = await file.async("blob");
+        const fileUrl = URL.createObjectURL(blob);
+        
+        let offset = config.defaultAddresses.app;
+        if (filename.toLowerCase().includes("bootloader")) {
+          offset = config.defaultAddresses.bootloader;
+        } else if (filename.toLowerCase().includes("partition")) {
+          offset = config.defaultAddresses.partitions;
+        }
+        parts.push({
+          path: fileUrl,
+          offset: parseInt(offset, 16),
+        });
+      }
     }
-    parts.push({
-      path: asset.browser_download_url,
-      offset: parseInt(offset, 16),
-    });
+    
+    if (parts.length === 0) {
+      throw new Error("No .bin files found inside the zip archive");
+    }
+  } else {
+    for (const asset of targetAssets) {
+      if (!asset.name.endsWith(".bin")) continue;
+      let offset = config.defaultAddresses.app;
+      if (asset.name.toLowerCase().includes("bootloader")) {
+        offset = config.defaultAddresses.bootloader;
+      } else if (asset.name.toLowerCase().includes("partition")) {
+        offset = config.defaultAddresses.partitions;
+      }
+      parts.push({
+        path: getProxiedUrl(asset.browser_download_url),
+        offset: parseInt(offset, 16),
+      });
+    }
   }
 
   const manifest = {
-    name: config.githubRepo.split("/")[1] || "ESP32 App",
+    name: repo.split("/")[1] || "ESP32 App",
     version: release.tag_name,
     builds: [
       {

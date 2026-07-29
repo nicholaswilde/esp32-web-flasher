@@ -1,5 +1,7 @@
 {
   "githubRepo": "nicholaswilde/esp32-web-flasher",
+  "githubRepos": ["nicholaswilde/cyd-weather-station"],
+  "devices": ["cyd_28r"],
   "version": "v1.0.0",
   "copyrightOwner": "Nicholas Wilde",
   "copyrightLink": "https://github.com/nicholaswilde",
