@@ -23,20 +23,41 @@ export async function fetchReleaseManifest(repo, release, device) {
 
   let parts = [];
   
-  function getProxiedUrl(url) {
-    return `https://cors.eu.org/${url}`;
-  }
+  const proxies = [
+    url => `https://cors.eu.org/${url}`,
+    url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+  ];
+  
+  let workingProxy = proxies[0]; // Default for non-zip paths if needed
   
   const zipAsset = targetAssets.find(a => a.name.endsWith(".zip"));
   
   if (zipAsset) {
     console.log("Fetching and extracting zip asset:", zipAsset.name);
-    const proxyUrl = getProxiedUrl(zipAsset.browser_download_url);
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error("Failed to download zip file");
-    const arrayBuffer = await res.arrayBuffer();
+    let zipBuffer = null;
+    
+    for (const proxy of proxies) {
+      try {
+        console.log(`Trying proxy: ${proxy('URL')}`);
+        const res = await fetch(proxy(zipAsset.browser_download_url));
+        if (res.ok) {
+          zipBuffer = await res.arrayBuffer();
+          workingProxy = proxy; // Save the working proxy
+          console.log("Successfully downloaded zip using proxy.");
+          break;
+        }
+      } catch (e) {
+        console.warn("Proxy failed:", e);
+      }
+    }
+    
+    if (!zipBuffer) {
+      throw new Error("Failed to download zip file: all CORS proxies failed or were rate-limited.");
+    }
+    
     // JSZip is loaded globally in index.html
-    const zip = await window.JSZip.loadAsync(arrayBuffer);
+    const zip = await JSZip.loadAsync(zipBuffer);
     
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.endsWith(".bin") && !file.dir) {
@@ -69,7 +90,7 @@ export async function fetchReleaseManifest(repo, release, device) {
         offset = config.defaultAddresses.partitions;
       }
       parts.push({
-        path: getProxiedUrl(asset.browser_download_url),
+        path: workingProxy(asset.browser_download_url),
         offset: parseInt(offset, 16),
       });
     }

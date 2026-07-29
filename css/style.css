@@ -223,6 +223,38 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button.secondary-btn {
+  background-color: var(--surface2);
+  color: var(--text);
+}
+
+button.secondary-btn:hover:not(:disabled) {
+  background-color: var(--surface1);
+}
+
+select {
+  background-color: var(--mauve);
+  color: var(--base);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+select:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+select:disabled {
+  background-color: var(--surface2);
+  color: var(--subtext0);
+  cursor: not-allowed;
+}
+
 input[type="file"],
 input[type="text"] {
   background-color: var(--mantle);
@@ -230,6 +262,23 @@ input[type="text"] {
   padding: 0.5rem;
   border-radius: 8px;
   border: 1px solid var(--surface1);
+}
+
+input[type="file"]::file-selector-button {
+  background-color: var(--mauve);
+  color: var(--base);
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-right: 0.5rem;
+  font-family: inherit;
+}
+
+input[type="file"]::file-selector-button:hover {
+  opacity: 0.9;
 }
 
 .manual-upload-grid {

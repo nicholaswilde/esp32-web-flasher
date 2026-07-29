@@ -1,4 +1,4 @@
-import { fetchReleases, fetchReleaseManifest, applyManifestToButton } from "./github.js?v=5";
+import { fetchReleases, fetchReleaseManifest, applyManifestToButton } from "./github.js?v=8";
 import { createManifestFromFiles } from "./upload.js";
 import { initConsole } from "./console.js";
 import { loadConfig } from "./config.js";
@@ -46,6 +46,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   let currentReleases = [];
 
   if (fetchBtn && repoSelect && versionSelect && deviceSelect && config.githubRepos) {
+    repoSelect.innerHTML = '<option value="">Select a repository...</option>';
+    deviceSelect.innerHTML = '<option value="">Select a device...</option>';
+    versionSelect.innerHTML = '<option value="">Select a version...</option>';
+    versionSelect.disabled = true;
+
     config.githubRepos.forEach(repo => {
       const opt = document.createElement("option");
       opt.value = repo;
@@ -64,14 +69,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const loadVersions = async () => {
       const repo = repoSelect.value;
-      if (!repo) return;
+      if (!repo) {
+        versionSelect.disabled = true;
+        versionSelect.innerHTML = '<option value="">Select a version...</option>';
+        fetchBtn.disabled = true;
+        return;
+      }
       versionSelect.disabled = true;
       versionSelect.innerHTML = "<option>Loading...</option>";
       fetchBtn.disabled = true;
       
       try {
         currentReleases = await fetchReleases(repo);
-        versionSelect.innerHTML = "";
+        versionSelect.innerHTML = '<option value="">Select a version...</option>';
         currentReleases.forEach(r => {
           const opt = document.createElement("option");
           opt.value = r.tag_name;
@@ -79,18 +89,22 @@ document.addEventListener("DOMContentLoaded", async () => {
           versionSelect.appendChild(opt);
         });
         versionSelect.disabled = false;
-        fetchBtn.disabled = false;
       } catch (e) {
         console.error(e);
         versionSelect.innerHTML = "<option>Error loading versions</option>";
       }
     };
 
-    repoSelect.addEventListener("change", loadVersions);
-    
-    if (config.githubRepos.length > 0) {
+    const updateFetchButton = () => {
+      fetchBtn.disabled = !repoSelect.value || !versionSelect.value || !deviceSelect.value;
+    };
+
+    repoSelect.addEventListener("change", () => {
       loadVersions();
-    }
+      updateFetchButton();
+    });
+    versionSelect.addEventListener("change", updateFetchButton);
+    deviceSelect.addEventListener("change", updateFetchButton);
 
     fetchBtn.addEventListener("click", async () => {
       try {
@@ -110,6 +124,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         fetchBtn.textContent = "Error loading release";
       }
     });
+
+    const clearGithubBtn = document.getElementById("clear-github-btn");
+    if (clearGithubBtn) {
+      clearGithubBtn.addEventListener("click", () => {
+        repoSelect.value = "";
+        deviceSelect.value = "";
+        versionSelect.innerHTML = '<option value="">Select a version...</option>';
+        versionSelect.disabled = true;
+        fetchBtn.disabled = true;
+        fetchBtn.textContent = "Load Release";
+        applyManifestToButton({ name: "", builds: [] });
+      });
+    }
   }
 
   // Upload logic
@@ -168,6 +195,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         uploadBtn.textContent = "Error preparing files";
       }
     });
+
+    const clearUploadBtn = document.getElementById("clear-upload-btn");
+    if (clearUploadBtn) {
+      clearUploadBtn.addEventListener("click", () => {
+        if (bootloaderFile) bootloaderFile.value = "";
+        if (partitionsFile) partitionsFile.value = "";
+        if (firmwareFile) firmwareFile.value = "";
+        
+        checkInputs();
+        uploadBtn.textContent = "Prepare Files for Flashing";
+        applyManifestToButton({ name: "", builds: [] });
+      });
+    }
   }
 
   // Console logic

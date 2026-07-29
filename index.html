@@ -28,6 +28,29 @@
         <p>Flash your ESP32 device directly from the browser</p>
       </div>
       <section class="card">
+        <h2>Automatic GitHub Release</h2>
+        <p>Select a repository, version, and device to load the firmware.</p>
+        <div class="manual-upload-grid">
+          <div class="upload-row">
+            <label for="github-repo-select">Repository:</label>
+            <select id="github-repo-select"></select>
+          </div>
+          <div class="upload-row">
+            <label for="github-version-select">Version:</label>
+            <select id="github-version-select" disabled><option>Loading...</option></select>
+          </div>
+          <div class="upload-row">
+            <label for="github-device-select">Device:</label>
+            <select id="github-device-select"></select>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="fetch-github-btn" disabled>Load Release</button>
+          <button id="clear-github-btn" class="secondary-btn">Clear</button>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>Manual Upload</h2>
         <p>Upload specific .bin files and set their flash addresses. <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html" target="_blank" rel="noopener noreferrer">Learn more about default addresses.</a></p>
         <div class="manual-upload-grid">
@@ -67,6 +90,7 @@
         </div>
         <div class="actions">
           <button id="upload-btn" disabled>Prepare Files for Flashing</button>
+          <button id="clear-upload-btn" class="secondary-btn">Clear</button>
         </div>
       </section>
 
@@ -77,27 +101,6 @@
         </div>
       </section>
 
-      <section class="card">
-        <h2>Automatic GitHub Release</h2>
-        <p>Select a repository, version, and device to load the firmware.</p>
-        <div class="manual-upload-grid">
-          <div class="upload-row">
-            <label for="github-repo-select">Repository:</label>
-            <select id="github-repo-select"></select>
-          </div>
-          <div class="upload-row">
-            <label for="github-version-select">Version:</label>
-            <select id="github-version-select" disabled><option>Loading...</option></select>
-          </div>
-          <div class="upload-row">
-            <label for="github-device-select">Device:</label>
-            <select id="github-device-select"></select>
-          </div>
-        </div>
-        <div class="actions">
-          <button id="fetch-github-btn" disabled>Load Release</button>
-        </div>
-      </section>
       <section class="card">
         <h2>Serial Console</h2>
         <p>View live logs from your ESP32 device directly in the browser.</p>
@@ -122,6 +125,6 @@
       </div>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script type="module" src="js/app.js?v=5"></script>
+    <script type="module" src="js/app.js?v=8"></script>
   </body>
 </html>
