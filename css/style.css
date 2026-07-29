@@ -46,9 +46,30 @@ body {
 header {
   background-color: var(--mantle);
   width: 100%;
-  padding: 2rem;
-  text-align: center;
+  padding: 1rem 2rem;
   border-bottom: 2px solid var(--surface0);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.page-titles {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header-link {
+  color: var(--subtext0);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-link:hover {
+  color: var(--mauve);
 }
 
 h1 {
@@ -66,6 +87,68 @@ main {
   width: 100%;
 }
 
+footer {
+  width: 100%;
+  padding: 1rem 2rem;
+  border-top: 2px solid var(--surface0);
+  background-color: var(--mantle);
+  margin-top: auto;
+  box-sizing: border-box;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--subtext0);
+}
+
+footer p a {
+  color: var(--blue);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+footer p a:hover {
+  text-decoration: underline;
+  color: var(--sapphire);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--subtext0);
+}
+
+.footer-links a {
+  color: var(--blue);
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  color: var(--sapphire);
+}
+
 .card {
   background-color: var(--surface0);
   border-radius: 12px;
@@ -77,6 +160,17 @@ main {
 .card h2 {
   color: var(--blue);
   margin-top: 0;
+}
+
+.card p a {
+  color: var(--blue);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.card p a:hover {
+  text-decoration: underline;
+  color: var(--sapphire);
 }
 
 .actions {

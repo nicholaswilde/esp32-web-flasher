@@ -1,5 +1,9 @@
 {
   "githubRepo": "nicholaswilde/esp32-web-flasher",
+  "version": "v1.0.0",
+  "copyrightOwner": "Nicholas Wilde",
+  "copyrightLink": "https://github.com/nicholaswilde",
+  "copyrightYear": "2026",
   "defaultAddresses": {
     "bootloader": "0x1000",
     "partitions": "0x8000",

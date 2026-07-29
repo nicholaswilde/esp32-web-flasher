@@ -1,8 +1,42 @@
 import { fetchLatestReleaseManifest, applyManifestToButton } from "./github.js";
 import { createManifestFromFiles } from "./upload.js";
 import { initConsole } from "./console.js";
+import { loadConfig } from "./config.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const config = await loadConfig();
+    const repoLink = document.getElementById("repo-link");
+    if (config.githubRepo && repoLink) {
+      repoLink.href = `https://github.com/${config.githubRepo}`;
+      document.getElementById("repo-name").textContent = config.githubRepo;
+      repoLink.style.display = "flex";
+    }
+    
+    if (config.copyrightOwner) {
+      const ownerEl = document.getElementById("copyright-owner");
+      if (config.copyrightLink) {
+        ownerEl.innerHTML = `<a href="${config.copyrightLink}" target="_blank" rel="noopener noreferrer">${config.copyrightOwner}</a>`;
+      } else {
+        ownerEl.textContent = config.copyrightOwner;
+      }
+    }
+    if (config.copyrightYear) {
+      document.getElementById("copyright-year").textContent = config.copyrightYear;
+    }
+    if (config.version) {
+      document.getElementById("app-version").textContent = config.version;
+    }
+    
+    const bugLink = document.getElementById("bug-report-link");
+    if (config.githubRepo && bugLink) {
+      bugLink.href = `https://github.com/${config.githubRepo}/issues/new`;
+      bugLink.style.display = "inline";
+    }
+  } catch (e) {
+    console.error("Config load error", e);
+  }
+
   // GitHub logic
   const fetchBtn = document.getElementById("fetch-github-btn");
   if (fetchBtn) {
