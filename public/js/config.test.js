@@ -7,7 +7,14 @@ export async function runConfigTests() {
   // Mock fetch for testing
   window.fetch = async () => ({
     ok: true,
-    json: async () => ({ githubRepo: "test/repo" }),
+    json: async () => ({
+      githubRepo: "test/repo",
+      defaultAddresses: {
+        bootloader: "0x1000",
+        partitions: "0x8000",
+        app: "0x10000"
+      }
+    }),
   });
 
   try {

@@ -5,3 +5,8 @@ description = "A static client-side web application to flash ESP32 devices direc
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]

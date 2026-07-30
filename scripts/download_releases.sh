@@ -12,15 +12,23 @@ REPOS=$(jq -r '.githubRepos | keys[]' public/config.json)
 for REPO in $REPOS; do
   BASE_DIR="public/firmware/$REPO"
   PROJECT_NAME=$(echo "$REPO" | cut -d'/' -f2)
-  VERSIONS=$(rtk gh release list --repo "$REPO" -L "$LIMIT" | awk '{print $1}')
+  VERSIONS=$(rtk gh release list --repo "$REPO" -L "$LIMIT" --json tagName --jq '.[].tagName' | cat)
 
   for VERSION in $VERSIONS; do
-    ASSETS=$(rtk gh release view "$VERSION" --repo "$REPO" --json assets --jq '.assets[].name')
+    ASSETS=$(rtk gh release view "$VERSION" --repo "$REPO" --json assets --jq '.assets[].name' | cat)
     for ASSET in $ASSETS; do
-      if [[ $ASSET == *.zip ]]; then
-        PREFIX="$PROJECT_NAME-$VERSION-"
-        DEVICE=${ASSET#$PREFIX}
-        DEVICE=${DEVICE%.zip}
+      if [[ $ASSET == *.zip && $ASSET != *host* ]]; then
+        CLEAN_VERSION="${VERSION#v}"
+        if [[ $ASSET =~ .*-($VERSION|$CLEAN_VERSION)-(.*)\.zip ]]; then
+          DEVICE="${BASH_REMATCH[2]}"
+        else
+          DEVICE="${ASSET%.zip}"
+        fi
+        
+        # Override device name for side-eye
+        if [[ $PROJECT_NAME == "side-eye" && $DEVICE == "firmware" ]]; then
+          DEVICE="ESP32-C6"
+        fi
         
         TARGET_DIR="$BASE_DIR/$DEVICE/$VERSION"
         mkdir -p "$TARGET_DIR"

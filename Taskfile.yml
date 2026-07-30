@@ -1,6 +1,13 @@
 version: '3'
 
 tasks:
+  setup:
+    desc: Install all required project dependencies (Node, Python, and testing tools)
+    cmds:
+      - npm install
+      - npx playwright install chromium
+      - uv sync
+
   serve:
     desc: Serve the static site locally on port 8000
     cmds:
@@ -20,3 +27,14 @@ tasks:
     desc: Add a new GitHub repository to the project and download its releases
     cmds:
       - bash scripts/add_repo.sh {{.CLI_ARGS}}
+
+  test:
+    desc: Run both Python backend tests and Playwright frontend tests
+    cmds:
+      - uv run pytest tests/
+      - npx playwright test
+
+  default:
+    cmds:
+      - task -l
+    silent: true

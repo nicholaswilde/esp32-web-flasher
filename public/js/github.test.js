@@ -1,4 +1,4 @@
-import { fetchLatestReleaseManifest, applyManifestToButton } from "./github.js";
+import { fetchReleaseManifest, applyManifestToButton } from "./github.js";
 
 export async function runGitHubTests() {
   console.log("Running GitHub tests...");
@@ -40,7 +40,20 @@ export async function runGitHubTests() {
   };
 
   try {
-    const manifest = await fetchLatestReleaseManifest();
+    const fakeRelease = {
+      tag_name: "v1.0.0",
+      assets: [
+        {
+          name: "firmware.bin",
+          browser_download_url: "http://example.com/fw.bin",
+        },
+        {
+          name: "bootloader.bin",
+          browser_download_url: "http://example.com/bl.bin",
+        },
+      ],
+    };
+    const manifest = await fetchReleaseManifest("test/repo", fakeRelease, "");
     console.assert(manifest.name === "repo", "Manifest name should be 'repo'");
     console.assert(
       manifest.builds[0].parts.length === 2,
