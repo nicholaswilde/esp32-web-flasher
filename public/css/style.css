@@ -295,12 +295,11 @@ input[type="file"]::file-selector-button:hover {
   gap: 0.5rem;
 }
 
-
 /* Terminal Output */
 .terminal-output {
   background-color: var(--crust);
   color: var(--green);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid var(--surface0);

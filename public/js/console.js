@@ -12,7 +12,8 @@ export function initConsole() {
   let keepReading = true;
 
   // Add initial message
-  terminal.textContent = "Serial console ready. Click 'Connect to Console' to begin.\n";
+  terminal.textContent =
+    "Serial console ready. Click 'Connect to Console' to begin.\n";
 
   connectBtn.addEventListener("click", async () => {
     if (port) {
@@ -26,7 +27,7 @@ export function initConsole() {
 
       connectBtn.textContent = "Disconnect";
       clearBtn.disabled = false;
-      
+
       // Auto-show terminal on connect
       if (terminal.style.display === "none" && toggleBtn) {
         terminal.style.display = "block";
@@ -34,7 +35,7 @@ export function initConsole() {
       }
 
       terminal.textContent += "\n--- Connected ---\n";
-      
+
       keepReading = true;
       readLoop();
     } catch (e) {

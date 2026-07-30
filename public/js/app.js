@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("repo-name").textContent = config.githubRepo;
       repoLink.style.display = "flex";
     }
-    
+
     if (config.copyrightOwner) {
       const ownerEl = document.getElementById("copyright-owner");
       if (config.copyrightLink) {
@@ -23,12 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
     if (config.copyrightYear) {
-      document.getElementById("copyright-year").textContent = config.copyrightYear;
+      document.getElementById("copyright-year").textContent =
+        config.copyrightYear;
     }
     if (config.version) {
       document.getElementById("app-version").textContent = config.version;
     }
-    
+
     const bugLink = document.getElementById("bug-report-link");
     if (config.githubRepo && bugLink) {
       bugLink.href = `https://github.com/${config.githubRepo}/issues/new`;
@@ -53,21 +54,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchBtn.disabled = true;
 
     let firmwareIndex = {};
-    fetch('firmware/index.json')
-      .then(res => res.json())
-      .then(data => {
+    fetch("firmware/index.json")
+      .then((res) => res.json())
+      .then((data) => {
         firmwareIndex = data;
-        Object.keys(firmwareIndex).forEach(repo => {
+        Object.keys(firmwareIndex).forEach((repo) => {
           const opt = document.createElement("option");
           opt.value = repo;
           opt.textContent = repo;
           repoSelect.appendChild(opt);
         });
       })
-      .catch(e => console.error("Error loading firmware index:", e));
+      .catch((e) => console.error("Error loading firmware index:", e));
 
     const updateFetchButton = () => {
-      fetchBtn.disabled = !repoSelect.value || !versionSelect.value || !deviceSelect.value;
+      fetchBtn.disabled =
+        !repoSelect.value || !versionSelect.value || !deviceSelect.value;
     };
 
     repoSelect.addEventListener("change", () => {
@@ -79,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         deviceSelect.disabled = true;
       } else {
         deviceSelect.disabled = false;
-        Object.keys(firmwareIndex[repo] || {}).forEach(device => {
+        Object.keys(firmwareIndex[repo] || {}).forEach((device) => {
           const opt = document.createElement("option");
           opt.value = device;
           opt.textContent = device;
@@ -97,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         versionSelect.disabled = true;
       } else {
         versionSelect.disabled = false;
-        (firmwareIndex[repo][device] || []).forEach(version => {
+        (firmwareIndex[repo][device] || []).forEach((version) => {
           const opt = document.createElement("option");
           opt.value = version;
           opt.textContent = version;
@@ -115,12 +117,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         const repo = repoSelect.value;
         const version = versionSelect.value;
         const device = deviceSelect.value;
-        
-        const baseUrl = new URL(`firmware/${repo}/${device}/${version}`, window.location.href).href;
-        
+
+        const baseUrl = new URL(
+          `firmware/${repo}/${device}/${version}`,
+          window.location.href,
+        ).href;
+
         const repoConfig = config.githubRepos?.[repo] || {};
         const addresses = repoConfig.addresses || config.defaultAddresses;
-        
+
         const manifest = {
           name: repo.split("/")[1] || "ESP32 App",
           version: version,
@@ -128,9 +133,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             {
               chipFamily: "ESP32",
               parts: [
-                { path: `${baseUrl}/bootloader.bin`, offset: parseInt(addresses.bootloader, 16) },
-                { path: `${baseUrl}/partitions.bin`, offset: parseInt(addresses.partitions, 16) },
-                { path: `${baseUrl}/firmware.bin`, offset: parseInt(addresses.app, 16) }
+                {
+                  path: `${baseUrl}/bootloader.bin`,
+                  offset: parseInt(addresses.bootloader, 16),
+                },
+                {
+                  path: `${baseUrl}/partitions.bin`,
+                  offset: parseInt(addresses.partitions, 16),
+                },
+                {
+                  path: `${baseUrl}/firmware.bin`,
+                  offset: parseInt(addresses.app, 16),
+                },
               ],
             },
           ],
@@ -149,7 +163,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       clearGithubBtn.addEventListener("click", () => {
         repoSelect.value = "";
         deviceSelect.value = "";
-        versionSelect.innerHTML = '<option value="">Select a version...</option>';
+        versionSelect.innerHTML =
+          '<option value="">Select a version...</option>';
         versionSelect.disabled = true;
         fetchBtn.disabled = true;
         fetchBtn.textContent = "Load Release";
@@ -221,7 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (bootloaderFile) bootloaderFile.value = "";
         if (partitionsFile) partitionsFile.value = "";
         if (firmwareFile) firmwareFile.value = "";
-        
+
         checkInputs();
         uploadBtn.textContent = "Prepare Files for Flashing";
         applyManifestToButton({ name: "", builds: [] });

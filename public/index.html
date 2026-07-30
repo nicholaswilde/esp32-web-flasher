@@ -17,8 +17,29 @@
   </head>
   <body>
     <header>
-      <a id="repo-link" class="header-link" target="_blank" rel="noopener noreferrer" style="display: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+      <a
+        id="repo-link"
+        class="header-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="display: none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-github"
+        >
+          <path
+            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+          ></path>
+        </svg>
         <span id="repo-name"></span>
       </a>
     </header>
@@ -41,7 +62,9 @@
           </div>
           <div class="upload-row">
             <label for="github-version-select">Version:</label>
-            <select id="github-version-select" disabled><option>Loading...</option></select>
+            <select id="github-version-select" disabled>
+              <option>Loading...</option>
+            </select>
           </div>
         </div>
         <div class="actions">
@@ -52,7 +75,15 @@
 
       <section class="card">
         <h2>Manual Upload</h2>
-        <p>Upload specific .bin files and set their flash addresses. <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html" target="_blank" rel="noopener noreferrer">Learn more about default addresses.</a></p>
+        <p>
+          Upload specific .bin files and set their flash addresses.
+          <a
+            href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Learn more about default addresses.</a
+          >
+        </p>
         <div class="manual-upload-grid">
           <div class="upload-row">
             <label for="bootloader-file">Bootloader:</label>
@@ -97,7 +128,9 @@
       <section class="card">
         <h2>Flash Firmware</h2>
         <div class="actions" id="install-container">
-          <esp-web-install-button manifest="data:application/json,%7B%22name%22%3A%22%22%2C%22builds%22%3A%5B%5D%7D"></esp-web-install-button>
+          <esp-web-install-button
+            manifest="data:application/json,%7B%22name%22%3A%22%22%2C%22builds%22%3A%5B%5D%7D"
+          ></esp-web-install-button>
         </div>
       </section>
 
@@ -109,18 +142,37 @@
           <button id="console-toggle-btn">Show Logs</button>
           <button id="console-clear-btn" disabled>Clear Logs</button>
         </div>
-        <div id="console-terminal" class="terminal-output" style="display: none;"></div>
+        <div
+          id="console-terminal"
+          class="terminal-output"
+          style="display: none"
+        ></div>
       </section>
     </main>
     <footer>
       <div class="footer-content">
         <div class="footer-left">
-          <p>&copy; <span id="copyright-year"></span> <span id="copyright-owner"></span></p>
-          <a class="powered-by" href="https://esphome.github.io/esp-web-tools/" target="_blank" rel="noopener noreferrer">Powered by ESP Web Tools</a>
+          <p>
+            &copy; <span id="copyright-year"></span>
+            <span id="copyright-owner"></span>
+          </p>
+          <a
+            class="powered-by"
+            href="https://esphome.github.io/esp-web-tools/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Powered by ESP Web Tools</a
+          >
         </div>
         <div class="footer-links">
           <span id="app-version"></span>
-          <a id="bug-report-link" target="_blank" rel="noopener noreferrer" style="display: none;">Report a Bug</a>
+          <a
+            id="bug-report-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="display: none"
+            >Report a Bug</a
+          >
         </div>
       </div>
     </footer>
