@@ -1,6 +1,6 @@
 [project]
 name = "esp32-web-flasher"
-version = "0.1.0"
+version = "0.1.1"
 description = "A static client-side web application to flash ESP32 devices directly from your browser"
 readme = "README.md"
 requires-python = ">=3.8"

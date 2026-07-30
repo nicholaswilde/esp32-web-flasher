@@ -17,7 +17,8 @@ This skill handles the release process: determining the next version, validating
 
 3. **Update Version File and Commit:**
    - Update the `version = "..."` field in `pyproject.toml` to match the new version (without the 'v' prefix).
-   - Stage the file: `rtk git add pyproject.toml`
+   - Update the `"version": "..."` field in `public/config.json` to match the new version (with the 'v' prefix, e.g., `"v0.1.0"`).
+   - Stage the files: `rtk git add pyproject.toml public/config.json`
    - Commit the change: `rtk git commit -m "chore(release): bump version to v<new_version>"`
 
 4. **Verify Git State:**
