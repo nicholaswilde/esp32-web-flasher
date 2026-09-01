@@ -24,6 +24,12 @@
     },
     "nicholaswilde/side-eye": {
       "addresses": null
+    },
+    "nicholaswilde/cyd-digital-clock": {
+      "addresses": null
+    },
+    "nicholaswilde/home-assistant-adapter": {
+      "addresses": null
     }
   },
   "version": "v0.1.1",
