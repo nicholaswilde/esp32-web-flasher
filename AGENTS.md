@@ -12,6 +12,18 @@
   ```bash
   rtk gh issue list | cat
   ```
+
+## GitHub Issue Creation Guidelines
+When creating issues in this repository using `gh` / `rtk gh`:
+- **Features / Enhancements**:
+  - Title format: `[feat]: <description>`
+  - Labels: `enhancement`
+  - Example: `rtk gh issue create --title "[feat]: Add auto-reconnect" --label "enhancement" --body "..."`
+- **Bugs / Fixes**:
+  - Title format: `[bug] <description>`
+  - Labels: `bug`
+  - Example: `rtk gh issue create --title "[bug] Serial port disconnects abruptly" --label "bug" --body "..."`
+
 # Product Definition: ESP32 Web Flasher
 
 ## Vision
