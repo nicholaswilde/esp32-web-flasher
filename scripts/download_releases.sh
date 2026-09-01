@@ -32,12 +32,16 @@ for REPO in $REPOS; do
         
         TARGET_DIR="$BASE_DIR/$DEVICE/$VERSION"
         mkdir -p "$TARGET_DIR"
-        echo "Downloading $ASSET..."
-        gh release download "$VERSION" --repo "$REPO" --pattern "$ASSET" --dir "$TARGET_DIR" || echo "Failed to download $ASSET"
+        
+        if [ ! -f "$TARGET_DIR/$ASSET" ]; then
+          echo "Downloading $ASSET..."
+          gh release download "$VERSION" --repo "$REPO" --pattern "$ASSET" --dir "$TARGET_DIR" || echo "Failed to download $ASSET"
+        else
+          echo "Using cached $ASSET"
+        fi
         
         if [ -f "$TARGET_DIR/$ASSET" ]; then
           unzip -q -o "$TARGET_DIR/$ASSET" -d "$TARGET_DIR/"
-          rm "$TARGET_DIR/$ASSET"
         fi
       fi
     done

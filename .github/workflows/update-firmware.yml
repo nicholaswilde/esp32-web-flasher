@@ -26,6 +26,15 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
+      - name: Cache firmware downloads
+        uses: actions/cache@v4
+        with:
+          path: public/firmware/**/*.zip
+          key: firmware-zips-${{ hashFiles('public/config.json') }}-${{ github.run_id }}
+          restore-keys: |
+            firmware-zips-${{ hashFiles('public/config.json') }}-
+            firmware-zips-
+
       - name: Download latest releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
