@@ -31,7 +31,7 @@ tasks:
   test:
     desc: Run both Python backend tests and Playwright frontend tests
     cmds:
-      - uv run pytest --cov=scripts tests/
+      - uv run pytest --cov=scripts --cov-report=term --cov-report=lcov tests/
       - npx playwright test
 
   coveralls:
