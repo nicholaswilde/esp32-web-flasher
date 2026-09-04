@@ -15,19 +15,12 @@ def test_generate_firmware_index(tmp_path):
     mock_repo2 = firmware_dir / "testorg" / "testrepo" / "device_a" / "v1.1.0"
     mock_repo2.mkdir(parents=True)
     
-    # Mock the script's firmware_dir path
-    script_path = os.path.abspath("scripts/generate_firmware_index.py")
+    import sys
+    sys.path.insert(0, os.path.abspath("scripts"))
+    import generate_firmware_index
     
-    # Run the script but replace the firmware_dir path dynamically
-    with open(script_path, "r") as f:
-        script_code = f.read()
-    
-    # Replace the hardcoded firmware_dir
-    script_code = script_code.replace('firmware_dir = "public/firmware"', f'firmware_dir = "{str(firmware_dir)}"')
-    
-    # Execute the modified script
-    namespace = {}
-    exec(script_code, namespace)
+    # Run the function
+    generate_firmware_index.generate_index(str(firmware_dir))
     
     # Verify index.json was created
     index_file = firmware_dir / "index.json"

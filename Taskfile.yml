@@ -31,8 +31,14 @@ tasks:
   test:
     desc: Run both Python backend tests and Playwright frontend tests
     cmds:
-      - uv run pytest tests/
+      - uv run pytest --cov=scripts tests/
       - npx playwright test
+
+  coveralls:
+    desc: Upload coverage to coveralls.io (requires COVERALLS_REPO_TOKEN in .env)
+    dotenv: ['.env']
+    cmds:
+      - uv run coveralls
 
   default:
     cmds:

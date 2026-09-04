@@ -33,3 +33,4 @@ playwright-report/
 test-results/
 .pytest_cache/
 __pycache__/
+.coverage
