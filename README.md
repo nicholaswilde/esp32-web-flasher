@@ -1,6 +1,7 @@
 # :globe_with_meridians: ESP32 Web Flasher :zap:
 [![task](https://img.shields.io/badge/Task-Enabled-brightgreen?style=for-the-badge&logo=task&logoColor=white)](https://taskfile.dev/#/)
-[![test](https://img.shields.io/github/actions/workflow/status/nicholaswilde/esp32-web-flaster/test.yaml?label=test&style=for-the-badge&branch=main&logo=github-actions)](https://github.com/nicholaswilde/esp32-web-flaster/actions/workflows/test.yaml)
+[![test](https://img.shields.io/github/actions/workflow/status/nicholaswilde/esp32-web-flasher/test.yaml?label=test&style=for-the-badge&branch=main&logo=github-actions)](https://github.com/nicholaswilde/esp32-web-flasher/actions/workflows/test.yaml)
+[![coverage](https://img.shields.io/coveralls/github/nicholaswilde/esp32-web-flasher?style=for-the-badge&logo=coveralls)](https://coveralls.io/github/nicholaswilde/esp32-web-flasher)
 
 A static, client-side web application to flash ESP32 devices directly from your browser using the Web Serial API and [ESP Web Tools](https://esphome.github.io/esp-web-tools/).
 

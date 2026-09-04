@@ -41,3 +41,8 @@ This skill retrieves the git commit logs for a specified range (or defaults to t
    - At the bottom of the summary, add a comparison link:
      `**Full Changelog**: https://github.com/nicholaswilde/esp32-web-flasher/compare/<url_range>`
      where `<url_range>` is the range with `..` replaced by `...` (e.g., `v0.1.2...v0.1.3` or `HEAD`).
+
+5. **Update Release Draft (using GitHub CLI):**
+   - Save the formatted release summary to a temporary file (e.g., `/tmp/release_notes.md`).
+   - Run `rtk gh release edit <LATEST_TAG> --notes-file /tmp/release_notes.md` to update the body of the GitHub release.
+   - Do NOT pass `--draft=false` so that it remains a draft for the user to review.
