@@ -27,6 +27,11 @@ replay_pid*
 .env
 .venv/
 
+# Serena
+.serena/cache/
+.serena/logs/
+.serena/project.local.yml
+
 # Testing
 node_modules/
 playwright-report/
