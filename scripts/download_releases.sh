@@ -1,13 +1,21 @@
 #!/bin/bash
-# Usage: ./scripts/download_releases.sh [limit]
-LIMIT=${1:-5}
+# Usage: ./scripts/download_releases.sh [repo] [limit] OR ./scripts/download_releases.sh [limit]
 
 if ! command -v jq &> /dev/null; then
     echo "jq is required but not installed."
     exit 1
 fi
 
-REPOS=$(jq -r '.githubRepos | keys[]' public/config.json)
+if [[ -n "$1" && "$1" =~ ^[0-9]+$ ]]; then
+  LIMIT=$1
+  REPOS=$(jq -r '.githubRepos | keys[]' public/config.json)
+elif [[ -n "$1" ]]; then
+  REPOS="$1"
+  LIMIT=${2:-5}
+else
+  LIMIT=5
+  REPOS=$(jq -r '.githubRepos | keys[]' public/config.json)
+fi
 
 for REPO in $REPOS; do
   BASE_DIR="public/firmware/$REPO"
