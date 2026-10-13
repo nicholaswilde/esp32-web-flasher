@@ -30,6 +30,7 @@ replay_pid*
 # Serena
 .serena/cache/
 .serena/logs/
+.serena/memories/
 .serena/project.local.yml
 
 # Testing
