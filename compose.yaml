@@ -1,0 +1,18 @@
+# Docker Compose file for ESP32 Web Flasher
+#
+# Deploy the client-side static web flasher with live volume mounts
+# for the firmware library and configuration file.
+
+services:
+  esp32-web-flasher:
+    image: ghcr.io/nicholaswilde/esp32-web-flasher:latest
+    container_name: esp32-web-flasher
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ${FIRMWARE_DIR:-./public/firmware}:/usr/share/nginx/html/firmware
+      - ${CONFIG_FILE:-./public/config.json}:/usr/share/nginx/html/config.json:ro
+    restart: unless-stopped

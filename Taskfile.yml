@@ -40,6 +40,36 @@ tasks:
     cmds:
       - uv run coveralls
 
+  docker:build:
+    desc: Build the Docker container image
+    cmds:
+      - docker build -t esp32-web-flasher:latest .
+
+  docker:run:
+    desc: Run the Docker container image locally with volume mounts
+    cmds:
+      - docker run --rm -p 8000:80 -v ./public/firmware:/usr/share/nginx/html/firmware -v ./public/config.json:/usr/share/nginx/html/config.json:ro esp32-web-flasher:latest
+
+  docker:up:
+    desc: Start the Docker container using Docker Compose
+    cmds:
+      - docker compose up -d
+
+  docker:down:
+    desc: Stop the Docker container using Docker Compose
+    cmds:
+      - docker compose down
+
+  docker:logs:
+    desc: View the Docker container logs using Docker Compose
+    cmds:
+      - docker compose logs -f
+
+  docker:test:
+    desc: Run Docker container scaffolding and runtime integration tests
+    cmds:
+      - uv run pytest tests/test_docker.py
+
   default:
     cmds:
       - task -l

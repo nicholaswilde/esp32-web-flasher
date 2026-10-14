@@ -1,6 +1,7 @@
 # :globe_with_meridians: ESP32 Web Flasher :zap:
 [![task](https://img.shields.io/badge/Task-Enabled-brightgreen?style=for-the-badge&logo=task&logoColor=white)](https://taskfile.dev/#/)
 [![test](https://img.shields.io/github/actions/workflow/status/nicholaswilde/esp32-web-flasher/test.yaml?label=test&style=for-the-badge&branch=main&logo=github-actions)](https://github.com/nicholaswilde/esp32-web-flasher/actions/workflows/test.yaml)
+[![docker](https://img.shields.io/github/actions/workflow/status/nicholaswilde/esp32-web-flasher/docker.yml?label=docker&style=for-the-badge&branch=main&logo=docker)](https://github.com/nicholaswilde/esp32-web-flasher/actions/workflows/docker.yml)
 [![coverage](https://img.shields.io/coveralls/github/nicholaswilde/esp32-web-flasher?style=for-the-badge&logo=coveralls)](https://coveralls.io/github/nicholaswilde/esp32-web-flasher)
 
 A static, client-side web application to flash ESP32 devices directly from your browser using the Web Serial API and [ESP Web Tools](https://esphome.github.io/esp-web-tools/).
@@ -68,6 +69,48 @@ task serve
 2. Connect your ESP32 device via USB.
 3. Select your `.bin` files and click **Prepare Files for Flashing**, then click **Connect** to flash the firmware.
 4. Use the **Serial Console** section to connect and view live logs.
+
+### :whale: Running with Docker
+
+You can run the web flasher inside a lightweight Docker container (served with Nginx).
+
+#### Using Task
+
+```bash
+# Build the Docker image
+task docker:build
+
+# Run Docker scaffolding and integration tests
+task docker:test
+
+# Start the container using Docker Compose
+task docker:up
+
+# View logs
+task docker:logs
+
+# Stop the container
+task docker:down
+```
+
+#### Using Docker Compose
+
+```bash
+docker compose up -d
+```
+
+#### Using Docker CLI
+
+```bash
+docker run --rm -p 8000:80 \
+  -v ./public/firmware:/usr/share/nginx/html/firmware \
+  -v ./public/config.json:/usr/share/nginx/html/config.json:ro \
+  ghcr.io/nicholaswilde/esp32-web-flasher:latest
+```
+
+The container mounts:
+- `/usr/share/nginx/html/firmware`: Local firmware library directory containing firmware binaries and `index.json`.
+- `/usr/share/nginx/html/config.json`: Repository address and configuration file (read-only).
 
 ### :test_tube: Testing
 
