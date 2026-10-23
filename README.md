@@ -12,6 +12,7 @@ A static, client-side web application to flash ESP32 devices directly from your 
 ## :sparkles: Features
 
 - **Local Firmware Library:** Browse and flash pre-downloaded firmware releases from the local `firmware/` directory via a simple dropdown interface.
+- **Repository Documentation / Help:** Directly open the repository or custom help documentation URL for the selected project via the Help button.
 - **Direct Web Flashing:** Flash your ESP32 device directly from the browser without needing the Arduino IDE or command-line tools.
 - **Manual Firmware Upload:** Select individual `.bin` files (Bootloader, Firmware App, and Partitions) and upload them to custom hex memory addresses (defaults to `0x1000`, `0x10000`, and `0x8000`).
 - **Web Serial Console:** A built-in live terminal to view output logs straight from the ESP32. Extremely useful for verifying successful boots and debugging without needing external serial monitors.
@@ -40,9 +41,9 @@ task add-repo -- <org/repo>
 
 This updates `config.json` and automatically downloads its available releases.
 
-### :wrench: Per-Repository Addresses
+### :wrench: Per-Repository Addresses & Help URL
 
-By default, the web flasher uses standard ESP32 flash addresses (Bootloader: `0x1000`, Partitions: `0x8000`, App: `0x10000`). If a specific repository requires custom flash offsets, you can override them in `config.json` under `githubRepos`:
+By default, the web flasher uses standard ESP32 flash addresses (Bootloader: `0x1000`, Partitions: `0x8000`, App: `0x10000`) and opens `https://github.com/<org>/<repo>` when clicking the Help button. You can configure custom flash offsets and an optional custom `helpUrl` in `config.json` under `githubRepos`:
 
 ```json
   "githubRepos": {
@@ -51,7 +52,8 @@ By default, the web flasher uses standard ESP32 flash addresses (Bootloader: `0x
         "bootloader": "0x0000",
         "partitions": "0x8000",
         "app": "0x10000"
-      }
+      },
+      "helpUrl": "https://nicholaswilde.github.io/custom-project/"
     }
   }
 ```

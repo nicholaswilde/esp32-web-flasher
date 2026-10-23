@@ -6,7 +6,8 @@
         "bootloader": "0x1000",
         "partitions": "0x8000",
         "app": "0x10000"
-      }
+      },
+      "helpUrl": "https://github.com/nicholaswilde/cyd-weather-station"
     },
     "nicholaswilde/cyd-photo-frame": {
       "addresses": {

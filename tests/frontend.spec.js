@@ -77,6 +77,57 @@ test("Help button opens chosen repository in new window and respects disabled st
   await expect(helpBtn).toBeDisabled();
 });
 
+test("Help button uses custom helpUrl from config when present and falls back when not", async ({
+  page,
+}) => {
+  await page.route("**/config.json*", async (route) => {
+    const json = {
+      githubRepo: "nicholaswilde/esp32-web-flasher",
+      githubRepos: {
+        "custom/repo": {
+          helpUrl: "https://example.com/custom-help",
+        },
+        "default/repo": {},
+      },
+    };
+    await route.fulfill({ json });
+  });
+
+  await page.route("**/firmware/index.json*", async (route) => {
+    const json = {
+      "custom/repo": { device1: ["v1.0.0"] },
+      "default/repo": { device1: ["v1.0.0"] },
+    };
+    await route.fulfill({ json });
+  });
+
+  await page.goto("/index.html");
+
+  const helpBtn = page.locator("#help-github-btn");
+  const repoSelect = page.locator("#github-repo-select");
+
+  await page.waitForFunction(() => {
+    const select = document.getElementById("github-repo-select");
+    return select && select.options.length > 2;
+  });
+
+  // Test custom helpUrl
+  await repoSelect.selectOption("custom/repo");
+  const customPopupPromise = page.waitForEvent("popup");
+  await helpBtn.click();
+  const customPopup = await customPopupPromise;
+  expect(customPopup.url()).toBe("https://example.com/custom-help");
+  await customPopup.close();
+
+  // Test fallback to https://github.com/<repo>
+  await repoSelect.selectOption("default/repo");
+  const fallbackPopupPromise = page.waitForEvent("popup");
+  await helpBtn.click();
+  const fallbackPopup = await fallbackPopupPromise;
+  expect(fallbackPopup.url()).toBe("https://github.com/default/repo");
+  await fallbackPopup.close();
+});
+
 test("Buttons have informative tooltips", async ({ page }) => {
   await page.goto("/index.html");
 

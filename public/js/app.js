@@ -169,11 +169,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       helpBtn.addEventListener("click", () => {
         const repo = repoSelect.value;
         if (repo) {
-          window.open(
-            `https://github.com/${repo}`,
-            "_blank",
-            "noopener,noreferrer",
-          );
+          const repoConfig = config.githubRepos?.[repo];
+          const helpUrl = repoConfig?.helpUrl || `https://github.com/${repo}`;
+          window.open(helpUrl, "_blank", "noopener,noreferrer");
         }
       });
     }
