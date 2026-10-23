@@ -6,22 +6,22 @@ def generate_index(firmware_dir="public/firmware"):
     index = {}
 
     if os.path.exists(firmware_dir):
-        for org in os.listdir(firmware_dir):
+        for org in sorted(os.listdir(firmware_dir)):
             if not os.path.isdir(os.path.join(firmware_dir, org)): continue
-            for repo in os.listdir(os.path.join(firmware_dir, org)):
+            for repo in sorted(os.listdir(os.path.join(firmware_dir, org))):
                 repo_path = os.path.join(firmware_dir, org, repo)
                 if not os.path.isdir(repo_path): continue
                 
                 full_repo = f"{org}/{repo}"
                 index[full_repo] = {}
                 
-                for device in os.listdir(repo_path):
+                for device in sorted(os.listdir(repo_path)):
                     device_path = os.path.join(repo_path, device)
                     if not os.path.isdir(device_path): continue
                     
                     index[full_repo][device] = []
                     
-                    for version in os.listdir(device_path):
+                    for version in sorted(os.listdir(device_path)):
                         version_path = os.path.join(device_path, version)
                         if not os.path.isdir(version_path): continue
                         

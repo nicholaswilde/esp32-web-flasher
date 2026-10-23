@@ -228,6 +228,10 @@ button.secondary-btn {
   color: var(--text);
 }
 
+button.secondary-btn:disabled {
+  color: var(--subtext0);
+}
+
 button.secondary-btn:hover:not(:disabled) {
   background-color: var(--surface1);
 }

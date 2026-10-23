@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // GitHub logic
   const fetchBtn = document.getElementById("fetch-github-btn");
+  const helpBtn = document.getElementById("help-github-btn");
   const repoSelect = document.getElementById("github-repo-select");
   const versionSelect = document.getElementById("github-version-select");
   const deviceSelect = document.getElementById("github-device-select");
@@ -52,6 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     deviceSelect.disabled = true;
     versionSelect.disabled = true;
     fetchBtn.disabled = true;
+    if (helpBtn) {
+      helpBtn.disabled = true;
+    }
 
     let firmwareIndex = {};
     fetch("firmware/index.json")
@@ -74,6 +78,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     repoSelect.addEventListener("change", () => {
       const repo = repoSelect.value;
+      if (helpBtn) {
+        helpBtn.disabled = !repo;
+      }
       deviceSelect.innerHTML = '<option value="">Select a device...</option>';
       versionSelect.innerHTML = '<option value="">Select a version...</option>';
       versionSelect.disabled = true;
@@ -158,6 +165,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
+    if (helpBtn) {
+      helpBtn.addEventListener("click", () => {
+        const repo = repoSelect.value;
+        if (repo) {
+          window.open(
+            `https://github.com/${repo}`,
+            "_blank",
+            "noopener,noreferrer",
+          );
+        }
+      });
+    }
+
     const clearGithubBtn = document.getElementById("clear-github-btn");
     if (clearGithubBtn) {
       clearGithubBtn.addEventListener("click", () => {
@@ -167,6 +187,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           '<option value="">Select a version...</option>';
         versionSelect.disabled = true;
         fetchBtn.disabled = true;
+        if (helpBtn) {
+          helpBtn.disabled = true;
+        }
         fetchBtn.textContent = "Load Release";
         applyManifestToButton({ name: "", builds: [] });
       });
