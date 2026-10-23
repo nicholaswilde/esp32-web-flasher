@@ -1,48 +1,34 @@
+---
+name: release-summary
+description: Generates a clean, professional GitHub release summary based on git logs using scripts/release_summary.py.
+---
 # /release-summary [range]
 
 Generates a clean, professional GitHub release summary based on git logs.
 
 ## Description
-This skill retrieves the git commit logs for a specified range (or defaults to the latest two tags) and formats them into a categorized, structured release summary suitable for GitHub.
+This skill uses `scripts/release_summary.py` to retrieve git commit logs, format them into a structured markdown summary (Features, Bug Fixes, etc.), and updates the existing GitHub draft release.
 
 ## Protocol
 
-1. **Determine the Git Log Range:**
-   - Check if a `[range]` argument (e.g., `v0.1.2..v0.1.3` or `HEAD`) is provided.
-   - If no range is specified, execute git commands to detect the latest two tags:
-     - Run `rtk git tag --sort=-v:refname | head -n 2`
-     - Extract `LATEST` (the first line) and `PREVIOUS` (the second line).
-     - If `PREVIOUS` is empty (only one tag or no tags), default `range` to `HEAD`.
-     - Otherwise, set `range` to `PREVIOUS..LATEST`.
+1. Execute the Python script. If no range is provided, it automatically detects the latest two tags.
+   ```bash
+   uv run python scripts/release_summary.py [range]
+   ```
 
-2. **Retrieve Git Log Entries:**
-   - Run `rtk git log --pretty=format:"- %s" <range>` where `<range>` is the determined range.
+2. **Special Thanks**: If the user asks to add special thanks (e.g. to a contributor or tester), pass `--thanks` (and optionally `--for` / reason):
+   ```bash
+   # Name and reason
+   uv run python scripts/release_summary.py [range] --thanks "<Name>" --for "<reason>"
 
-3. **Generate and Format the Release Summary:**
-   - Categorize the commit messages into the following markdown sections (using `###` for headers):
-     - ### 🚀 **New Features** (for commits starting with `feat`)
-     - ### 🐛 **Bug Fixes** (for commits starting with `fix`)
-     - ### ✨ **Improvements** (for commits starting with `refactor`, `perf`, `style`)
-     - ### 📝 **Documentation** (for commits starting with `docs`)
-   - Clean up the commit messages:
-     - Exclude any commit messages related to `conductor` or `checkpoint` tasks (e.g., commits containing `conductor` or `checkpoint` in their type, scope, or message body).
-     - Strip the type prefix (e.g. "feat:", "fix:").
-     - If a scope is present (e.g., "api:"), keep it (e.g., `api: add status endpoint` -> `api: Add status endpoint`).
-     - Ensure the first letter of each bullet is capitalized.
-     - Use backticks for technical terms (e.g., `HTML`, `CSS`, `JavaScript`, `ESP Web Tools`, `Web Serial API`).
-   - Format restrictions:
-     - Do not include line numbers in the output.
-     - Always wrap the final release summary inside a ````markdown ```` code block so it can be easily copied.
-     - Omit sections that have no matching changes.
-     - Do not include git commit hashes.
-     - Maintain a direct, professional, and technical tone.
+   # Or full message
+   uv run python scripts/release_summary.py [range] --thanks "Huge thanks to **<Name>** for <reason>!"
+   ```
+   This generates the section using the format:
+   ```markdown
+   ### 🙏 **Special Thanks**
 
-4. **Add Changelog Comparison Link:**
-   - At the bottom of the summary, add a comparison link:
-     `**Full Changelog**: https://github.com/nicholaswilde/esp32-web-flasher/compare/<url_range>`
-     where `<url_range>` is the range with `..` replaced by `...` (e.g., `v0.1.2...v0.1.3` or `HEAD`).
+   Huge thanks to **<Name>** for <reason>!
+   ```
 
-5. **Update Release Draft (using GitHub CLI):**
-   - Save the formatted release summary to a temporary file (e.g., `/tmp/release_notes.md`).
-   - Run `rtk gh release edit <LATEST_TAG> --notes-file /tmp/release_notes.md` to update the body of the GitHub release.
-   - Do NOT pass `--draft=false` so that it remains a draft for the user to review.
+3. The script will parse the commits, generate the markdown, and automatically run `gh release edit` to update the draft release in-place.
