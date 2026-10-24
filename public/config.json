@@ -34,6 +34,9 @@
     },
     "nicholaswilde/cyd-wifi-analyzer": {
       "addresses": null
+    },
+    "nicholaswilde/cyd-bluetooth-tracker": {
+      "addresses": null
     }
   },
   "version": "v0.1.6",
