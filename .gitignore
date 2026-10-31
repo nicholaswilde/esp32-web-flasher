@@ -28,10 +28,16 @@ replay_pid*
 .venv/
 
 # Serena
-.serena/cache/
-.serena/logs/
-.serena/memories/
-.serena/project.local.yml
+.serena/
+
+.rtk/*
+!.rtk/filters.toml
+
+# Ignore subagent workspaces and outputs
+.agents/*
+!.agents/skills/
+!.agents/rules/
+!.agents/skills_catalog.md
 
 # Testing
 node_modules/

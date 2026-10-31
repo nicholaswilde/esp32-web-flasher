@@ -1,3 +1,8 @@
+---
+name: test-fix
+description: Runs full validation suite (formatting and unit tests) and autonomously fixes failures. Trigger: /test-fix, "fix tests", "run test-fix".
+---
+
 # /test-fix
 
 Runs the full validation suite (formatting and unit tests) and autonomously fixes failures.
