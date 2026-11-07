@@ -4,7 +4,9 @@
 - **GitHub CLI**: Prefix `gh` commands with `rtk` and pipe to `cat` (e.g., `rtk gh issue list | cat`, `rtk gh pr status | cat`). Always pipe to bypass interactive pagers.
 - **File & Directory Inspection**: Use `rtk ls`, `rtk tree`, `rtk find`, or `rtk read` when listing or reading files for token-optimized output.
 - **Searching**: Use `rtk rg` or `rg` (ripgrep) for line search pattern matching to save tokens.
+- **Ripwire Operations**: Prefix `ripwire` commands with `rtk` (e.g., `rtk ripwire <dir> --for="<task>"`). Always invoke via CLI, never register or use MCP.
 - **Build & Test Outputs**: Use `rtk err` or `rtk test` when running build/test commands to filter output to errors/failures only (e.g., `rtk test pio test -e native`).
+- **Python & UV Operations**: Prefix Python scripts and commands with `uv run`, and prefix `uv` commands with `rtk` (e.g., `rtk uv run <script.py>`, `rtk uv run <command>`, `rtk uv add`, `rtk uv sync`). Never run bare `python` or bare `uv`.
 - **Exceptions**: Inside `ctx_execute` / `ctx_batch_execute` sandbox code, skip `rtk` (only printed output enters context). Drop `rtk` when exact raw bytes or patch required (`git diff` patch).
 <!-- rtk-end -->
 
@@ -88,6 +90,19 @@ Use Headroom (`headroom`) MCP tools to manage context window consumption on larg
 - `headroom_stats`: Monitor headroom cache usage.
 <!-- headroom-end -->
 
+<!-- ripwire-begin -->
+## Ripwire CLI Guidelines
+Use `ripwire` CLI (prefixed with `rtk ripwire`) for AST codebase mapping, call graphs, blast radius, and structural queries:
+- **CLI First**: Always invoke `rtk ripwire <dir> [flags]` via CLI; do NOT use MCP server.
+- **Task Orientation**: `rtk ripwire <dir> --for="<task>"` for ranked signatures and bodies.
+- **Task Bundle**: `rtk ripwire <dir> --pack-task="<task>" --legend=compact`.
+- **Stack Trace / Error**: `rtk ripwire <dir> --from-trace=FILE --legend=compact` (`-` for stdin).
+- **Call Graph**: `rtk ripwire <dir> --callers=SYM`, `--callees=SYM`, `--uses=SYM`.
+- **Blast Radius**: `rtk ripwire <dir> --impact=SYM --legend=compact` before changing shared code.
+- **Quality Delta & Gate**: `rtk ripwire <dir> --quality-delta --legend=compact` and `--test-gate --legend=compact`.
+- **Atomic Edits**: `rtk ripwire <dir> --replace-symbol-body=SYM --edit-payload=FILE` without whole-file re-reading.
+<!-- ripwire-end -->
+
 <!-- ripgrep-guidelines-begin -->
 ## Ripgrep Guidelines
 - **Pattern Searching**: Always use `rg` (ripgrep) or `rtk rg` instead of standard `grep` to search text inside files quickly and save token output.
@@ -99,6 +114,17 @@ Use Headroom (`headroom`) MCP tools to manage context window consumption on larg
 - **Format**: Run `taplo fmt` to format TOML files in-place.
 - **Validation**: Run `taplo lint` to validate TOML syntax and schema.
 <!-- taplo-rules-end -->
+
+<!-- fd-rules-begin -->
+## File Discovery (`fd`) Guidelines
+- **Prefer `fd`**: Use `fd` (or `rtk fd`) instead of `find` for finding files and directories across repositories.
+- **Scope**: Respects `.gitignore`, skips build directories and caches, runs faster, and saves context tokens.
+<!-- fd-rules-end -->
+
+<!-- uv-rules-begin -->
+## Python Tooling & Execution with `uv`
+When executing Python scripts in this workspace, always use `rtk uv run python3 <script>` or `rtk uv run <command>`. Never run bare `python`, `python3`, or `pip`. Use `rtk uv add` to manage dependencies. Keep `uv.lock` and `pyproject.toml` synchronized and committed whenever project dependencies change.
+<!-- uv-rules-end -->
 
 <!-- issue-management-begin -->
 ## GitHub Issue Management

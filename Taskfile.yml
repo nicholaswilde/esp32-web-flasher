@@ -20,6 +20,7 @@ tasks:
 
   download:
     desc: Download and extract firmware releases
+    aliases: [download-firmware]
     cmds:
       - bash scripts/download_releases.sh
 
