@@ -162,3 +162,71 @@ test("Buttons have informative tooltips", async ({ page }) => {
     await expect(el).toHaveAttribute("title", title);
   }
 });
+
+test("Version dropdown filters pre-releases unless Show pre-releases is checked", async ({
+  page,
+}) => {
+  await page.route("**/config.json*", async (route) => {
+    const json = {
+      githubRepo: "test/repo",
+      githubRepos: {
+        "test/repo": {},
+      },
+      defaultAddresses: {
+        bootloader: "0x1000",
+        partitions: "0x8000",
+        app: "0x10000",
+      },
+    };
+    await route.fulfill({ json });
+  });
+
+  await page.route("**/firmware/index.json*", async (route) => {
+    const json = {
+      "test/repo": {
+        device_1: ["v1.1.0", "v1.1.0-rc.1", "v1.0.0"],
+      },
+    };
+    await route.fulfill({ json });
+  });
+
+  await page.goto("/index.html");
+
+  const repoSelect = page.locator("#github-repo-select");
+  const deviceSelect = page.locator("#github-device-select");
+  const versionSelect = page.locator("#github-version-select");
+  const prereleaseCheckbox = page.locator("#github-prerelease-checkbox");
+  const clearBtn = page.locator("#clear-github-btn");
+
+  await page.waitForFunction(() => {
+    const select = document.getElementById("github-repo-select");
+    return select && select.options.length > 1;
+  });
+
+  await repoSelect.selectOption("test/repo");
+  await deviceSelect.selectOption("device_1");
+
+  // By default (checkbox unchecked), pre-releases should be filtered out
+  await expect(prereleaseCheckbox).not.toBeChecked();
+  let options = await versionSelect.locator("option").allTextContents();
+  expect(options).toContain("v1.1.0");
+  expect(options).toContain("v1.0.0");
+  expect(options.some((opt) => opt.includes("v1.1.0-rc.1"))).toBe(false);
+
+  // Check the pre-release box
+  await prereleaseCheckbox.check();
+
+  options = await versionSelect.locator("option").allTextContents();
+  expect(options).toContain("v1.1.0");
+  expect(options).toContain("v1.1.0-rc.1 (pre-release)");
+  expect(options).toContain("v1.0.0");
+
+  // Value in option should be the clean tag
+  await versionSelect.selectOption("v1.1.0-rc.1");
+  await expect(versionSelect).toHaveValue("v1.1.0-rc.1");
+
+  // Clicking clear resets checkbox and selections
+  await clearBtn.click();
+  await expect(prereleaseCheckbox).not.toBeChecked();
+  await expect(versionSelect).toBeDisabled();
+});

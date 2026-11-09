@@ -8,6 +8,8 @@ import urllib.error
 import urllib.request
 import pytest
 
+pytestmark = pytest.mark.docker
+
 DOCKER_AVAILABLE = (
     shutil.which("docker") is not None
     and subprocess.run(

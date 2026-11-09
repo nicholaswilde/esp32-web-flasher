@@ -144,6 +144,38 @@ NEVER commit or stage sensitive credentials or secrets:
 - Never use blanket staging `git add .` when untracked secret files exist; stage explicitly by name.
 <!-- sensitive-information-protection-end -->
 
+## Testing & Quality Gates
+
+### Test-Driven Development (TDD) Protocol
+
+Strictly mandatory for all features, bug fixes, and refactors:
+
+1. **Red Phase**: Write failing unit or integration tests first before writing implementation code. Run `task test:unit` or `task test` to verify the failure.
+2. **Green Phase**: Implement the minimum working code to make tests pass (Ponytail discipline).
+3. **Refactor Phase**: Clean up code and remove duplication while maintaining green tests.
+
+### Quality Gates
+
+Before completing or committing any task:
+
+- [ ] `task check` passes cleanly (Prettier format check + full test suite).
+- [ ] Fast unit tests pass: `task test:unit`.
+- [ ] Browser/frontend integration tests pass: `task test:frontend`.
+- [ ] Test coverage remains high without regressions.
+
+### Development Commands (`Taskfile.yml`)
+
+```bash
+task check          # Run format check and full test suite
+task format         # Format HTML, CSS, JS, JSON with Prettier
+task format:check   # Dry-run check for code style issues
+task test           # Run full suite (Pytest + Playwright)
+task test:unit      # Fast unit tests (Python logic, < 0.2s)
+task test:python    # All Python tests
+task test:frontend  # Playwright browser integration tests
+task serve          # Serve static app locally on port 8000
+```
+
 # Product Definition: ESP32 Web Flasher
 
 ## Vision

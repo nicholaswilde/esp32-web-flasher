@@ -3,6 +3,16 @@ import { createManifestFromFiles } from "./upload.js";
 import { initConsole } from "./console.js";
 import { loadConfig } from "./config.js";
 
+export function isPrerelease(version) {
+  if (!version || typeof version !== "string") {
+    return false;
+  }
+  return (
+    /-[0-9A-Za-z.-]+$/.test(version) ||
+    /(?:alpha|beta|rc|dev|preview)/i.test(version)
+  );
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   let config = {};
   try {
@@ -45,6 +55,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const repoSelect = document.getElementById("github-repo-select");
   const versionSelect = document.getElementById("github-version-select");
   const deviceSelect = document.getElementById("github-device-select");
+  const prereleaseCheckbox = document.getElementById(
+    "github-prerelease-checkbox",
+  );
 
   if (fetchBtn && repoSelect && versionSelect && deviceSelect) {
     repoSelect.innerHTML = '<option value="">Select a repository...</option>';
@@ -76,6 +89,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         !repoSelect.value || !versionSelect.value || !deviceSelect.value;
     };
 
+    const populateVersions = () => {
+      const repo = repoSelect.value;
+      const device = deviceSelect.value;
+      const showPrereleases = prereleaseCheckbox
+        ? prereleaseCheckbox.checked
+        : false;
+      const prevVersion = versionSelect.value;
+
+      versionSelect.innerHTML = '<option value="">Select a version...</option>';
+      if (!repo || !device || !firmwareIndex[repo]?.[device]) {
+        versionSelect.disabled = true;
+        updateFetchButton();
+        return;
+      }
+
+      const allVersions = firmwareIndex[repo][device] || [];
+      const versionsToShow = showPrereleases
+        ? allVersions
+        : allVersions.filter((v) => !isPrerelease(v));
+
+      if (versionsToShow.length === 0) {
+        versionSelect.disabled = true;
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent =
+          allVersions.length > 0
+            ? "No stable versions (enable Show pre-releases)"
+            : "No versions available";
+        opt.disabled = true;
+        versionSelect.appendChild(opt);
+      } else {
+        versionSelect.disabled = false;
+        versionsToShow.forEach((version) => {
+          const opt = document.createElement("option");
+          opt.value = version;
+          opt.textContent = isPrerelease(version)
+            ? `${version} (pre-release)`
+            : version;
+          versionSelect.appendChild(opt);
+        });
+
+        if (prevVersion && versionsToShow.includes(prevVersion)) {
+          versionSelect.value = prevVersion;
+        }
+      }
+      updateFetchButton();
+    };
+
     repoSelect.addEventListener("change", () => {
       const repo = repoSelect.value;
       if (helpBtn) {
@@ -98,23 +159,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       updateFetchButton();
     });
 
-    deviceSelect.addEventListener("change", () => {
-      const repo = repoSelect.value;
-      const device = deviceSelect.value;
-      versionSelect.innerHTML = '<option value="">Select a version...</option>';
-      if (!device) {
-        versionSelect.disabled = true;
-      } else {
-        versionSelect.disabled = false;
-        (firmwareIndex[repo][device] || []).forEach((version) => {
-          const opt = document.createElement("option");
-          opt.value = version;
-          opt.textContent = version;
-          versionSelect.appendChild(opt);
-        });
-      }
-      updateFetchButton();
-    });
+    deviceSelect.addEventListener("change", populateVersions);
+
+    if (prereleaseCheckbox) {
+      prereleaseCheckbox.addEventListener("change", populateVersions);
+    }
 
     versionSelect.addEventListener("change", updateFetchButton);
 
@@ -181,6 +230,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       clearGithubBtn.addEventListener("click", () => {
         repoSelect.value = "";
         deviceSelect.value = "";
+        if (prereleaseCheckbox) {
+          prereleaseCheckbox.checked = false;
+        }
         versionSelect.innerHTML =
           '<option value="">Select a version...</option>';
         versionSelect.disabled = true;

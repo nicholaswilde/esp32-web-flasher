@@ -601,6 +601,9 @@ sdist = { url = "https://files.pythonhosted.org/packages/a2/55/8f8cab2afd404cf57
 name = "esp32-web-flasher"
 version = "0.1.6"
 source = { virtual = "." }
+dependencies = [
+    { name = "packaging" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -614,6 +617,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "packaging", specifier = ">=26.2" }]
 
 [package.metadata.requires-dev]
 dev = [

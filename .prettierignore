@@ -1,0 +1,5 @@
+node_modules/
+.rumdl_cache/
+playwright-report/
+test-results/
+.venv/

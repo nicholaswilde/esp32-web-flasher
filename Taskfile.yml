@@ -18,6 +18,17 @@ tasks:
     cmds:
       - npx prettier --write "**/*.{html,css,js,json}"
 
+  format:check:
+    desc: Check code formatting using Prettier
+    cmds:
+      - npx prettier --check "**/*.{html,css,js,json}"
+
+  check:
+    desc: Run formatting checks and all unit and frontend tests
+    cmds:
+      - task: format:check
+      - task: test
+
   download:
     desc: Download and extract firmware releases
     aliases: [download-firmware]
@@ -30,9 +41,24 @@ tasks:
       - bash scripts/add_repo.sh {{.CLI_ARGS}}
 
   test:
-    desc: Run both Python backend tests and Playwright frontend tests
+    desc: Run full test suite (Python backend and Playwright frontend)
     cmds:
       - uv run pytest --cov=scripts --cov-report=term --cov-report=lcov tests/
+      - npx playwright test
+
+  test:unit:
+    desc: Run fast unit tests (excluding container integration tests)
+    cmds:
+      - uv run pytest -m "not docker" tests/
+
+  test:python:
+    desc: Run all Python tests
+    cmds:
+      - uv run pytest tests/
+
+  test:frontend:
+    desc: Run Playwright browser/frontend tests
+    cmds:
       - npx playwright test
 
   coveralls:

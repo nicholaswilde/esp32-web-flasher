@@ -1,0 +1,20 @@
+# rumdl configuration file
+# https://github.com/rvben/rumdl
+
+[global]
+respect-gitignore = true
+
+exclude = [".git", "node_modules", "public/firmware"]
+
+# Relaxed rules suited for documentation & skills
+disable = [
+  "MD013", # Line length
+  "MD033", # Inline HTML
+  "MD041", # First line heading (skills starting with YAML frontmatter)
+]
+
+[MD007]
+indent = 2
+
+[MD024]
+siblings-only = true

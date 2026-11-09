@@ -14,6 +14,10 @@ def test_generate_firmware_index(tmp_path):
     mock_repo.mkdir(parents=True)
     mock_repo2 = firmware_dir / "testorg" / "testrepo" / "device_a" / "v1.1.0"
     mock_repo2.mkdir(parents=True)
+    mock_repo3 = firmware_dir / "testorg" / "testrepo" / "device_a" / "v1.1.0-rc.1"
+    mock_repo3.mkdir(parents=True)
+    mock_repo4 = firmware_dir / "testorg" / "testrepo" / "device_a" / "v1.0.0-beta"
+    mock_repo4.mkdir(parents=True)
     
     import sys
     sys.path.insert(0, os.path.abspath("scripts"))
@@ -33,7 +37,8 @@ def test_generate_firmware_index(tmp_path):
     assert "device_a" in data["testorg/testrepo"]
     versions = data["testorg/testrepo"]["device_a"]
     assert "v1.1.0" in versions
+    assert "v1.1.0-rc.1" in versions
     assert "v1.0.0" in versions
-    # Check descending sort
-    assert versions[0] == "v1.1.0"
-    assert versions[1] == "v1.0.0"
+    assert "v1.0.0-beta" in versions
+    # Check descending sort with proper SemVer precedence
+    assert versions == ["v1.1.0", "v1.1.0-rc.1", "v1.0.0", "v1.0.0-beta"]

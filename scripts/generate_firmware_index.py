@@ -1,6 +1,13 @@
 import os
 import json
 import re
+from packaging.version import parse as parse_version, InvalidVersion
+
+def version_sort_key(v):
+    try:
+        return (1, parse_version(v.lstrip("v")))
+    except InvalidVersion:
+        return (0, tuple(int(p) for p in re.findall(r"\d+", v)), v)
 
 def generate_index(firmware_dir="public/firmware"):
     index = {}
@@ -27,7 +34,7 @@ def generate_index(firmware_dir="public/firmware"):
                         
                         index[full_repo][device].append(version)
                     
-                    index[full_repo][device].sort(key=lambda x: [int(p) for p in re.findall(r'\d+', x)], reverse=True) # Sort versions descending properly
+                    index[full_repo][device].sort(key=version_sort_key, reverse=True) # Sort versions descending with SemVer
 
     with open(os.path.join(firmware_dir, "index.json"), "w") as f:
         json.dump(index, f, indent=2)

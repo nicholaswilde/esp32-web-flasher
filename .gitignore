@@ -48,3 +48,4 @@ __pycache__/
 *.pyc
 .coverage
 coverage.lcov
+.rumdl_cache/
