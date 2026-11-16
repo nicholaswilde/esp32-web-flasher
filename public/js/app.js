@@ -13,7 +13,55 @@ export function isPrerelease(version) {
   );
 }
 
+export function parseUrlParams(search = window.location.search) {
+  const params = new URLSearchParams(search);
+  const isTruthy = (value) =>
+    typeof value === "string" &&
+    (value === "1" || value.toLowerCase() === "true");
+  return {
+    repo: params.get("repo") || "",
+    device: params.get("device") || "",
+    version: params.get("version") || "",
+    prerelease: isTruthy(params.get("prerelease")),
+    autoload: isTruthy(params.get("autoload")),
+    bootloaderAddress:
+      params.get("bootloaderAddress") || params.get("bootloader_address") || "",
+    firmwareAddress:
+      params.get("firmwareAddress") || params.get("firmware_address") || "",
+    partitionsAddress:
+      params.get("partitionsAddress") || params.get("partitions_address") || "",
+  };
+}
+
+export function resolveRepoParam(repoParam, availableRepos) {
+  if (!repoParam || !Array.isArray(availableRepos)) {
+    return "";
+  }
+  if (availableRepos.includes(repoParam)) {
+    return repoParam;
+  }
+  const matches = availableRepos.filter(
+    (repo) => repo.split("/")[1] === repoParam,
+  );
+  return matches.length === 1 ? matches[0] : "";
+}
+
+export function resolveVersionParam(versionParam, availableVersions) {
+  if (
+    !versionParam ||
+    !Array.isArray(availableVersions) ||
+    availableVersions.length === 0
+  ) {
+    return "";
+  }
+  if (versionParam.toLowerCase() === "latest") {
+    return availableVersions[0];
+  }
+  return availableVersions.includes(versionParam) ? versionParam : "";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = parseUrlParams();
   let config = {};
   try {
     config = await loadConfig();
@@ -71,6 +119,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     let firmwareIndex = {};
+    const applyGitHubUrlParams = () => {
+      if (prereleaseCheckbox && urlParams.prerelease) {
+        prereleaseCheckbox.checked = true;
+      }
+      const resolvedRepo = resolveRepoParam(
+        urlParams.repo,
+        Object.keys(firmwareIndex),
+      );
+      if (!resolvedRepo) {
+        return;
+      }
+      repoSelect.value = resolvedRepo;
+      repoSelect.dispatchEvent(new Event("change"));
+
+      if (
+        !urlParams.device ||
+        !firmwareIndex[resolvedRepo]?.[urlParams.device]
+      ) {
+        return;
+      }
+      deviceSelect.value = urlParams.device;
+      const allVersions = firmwareIndex[resolvedRepo][urlParams.device] || [];
+      if (
+        prereleaseCheckbox &&
+        !prereleaseCheckbox.checked &&
+        urlParams.version &&
+        urlParams.version.toLowerCase() !== "latest" &&
+        allVersions.includes(urlParams.version) &&
+        isPrerelease(urlParams.version)
+      ) {
+        prereleaseCheckbox.checked = true;
+      }
+      populateVersions();
+
+      const visibleVersions = Array.from(versionSelect.options)
+        .map((opt) => opt.value)
+        .filter(Boolean);
+      const resolvedVersion = resolveVersionParam(
+        urlParams.version,
+        visibleVersions,
+      );
+      if (!resolvedVersion) {
+        return;
+      }
+      versionSelect.value = resolvedVersion;
+      updateFetchButton();
+      if (urlParams.autoload && !fetchBtn.disabled) {
+        fetchBtn.click();
+      }
+    };
+
     fetch("firmware/index.json")
       .then((res) => res.json())
       .then((data) => {
@@ -81,6 +180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           opt.textContent = repo;
           repoSelect.appendChild(opt);
         });
+        applyGitHubUrlParams();
       })
       .catch((e) => console.error("Error loading firmware index:", e));
 
@@ -254,6 +354,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const firmwareFile = document.getElementById("firmware-file");
   const firmwareAddress = document.getElementById("firmware-address");
   const uploadBtn = document.getElementById("upload-btn");
+
+  if (urlParams.bootloaderAddress && bootloaderAddress) {
+    bootloaderAddress.value = urlParams.bootloaderAddress;
+  }
+  if (urlParams.partitionsAddress && partitionsAddress) {
+    partitionsAddress.value = urlParams.partitionsAddress;
+  }
+  if (urlParams.firmwareAddress && firmwareAddress) {
+    firmwareAddress.value = urlParams.firmwareAddress;
+  }
 
   if (uploadBtn) {
     const fileInputs = [bootloaderFile, partitionsFile, firmwareFile].filter(

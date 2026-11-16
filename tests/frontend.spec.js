@@ -230,3 +230,94 @@ test("Version dropdown filters pre-releases unless Show pre-releases is checked"
   await expect(prereleaseCheckbox).not.toBeChecked();
   await expect(versionSelect).toBeDisabled();
 });
+
+test("URL parameters prefill dropdowns, prerelease, autoload, and address fields", async ({
+  page,
+}) => {
+  await page.route("**/config.json*", async (route) => {
+    await route.fulfill({
+      json: {
+        githubRepo: "nicholaswilde/esp32-web-flasher",
+        githubRepos: {
+          "nicholaswilde/cyd-weather-station": {
+            addresses: {
+              bootloader: "0x1000",
+              partitions: "0x8000",
+              app: "0x10000",
+            },
+          },
+        },
+        defaultAddresses: {
+          bootloader: "0x1000",
+          partitions: "0x8000",
+          app: "0x10000",
+        },
+      },
+    });
+  });
+
+  await page.route("**/firmware/index.json*", async (route) => {
+    await route.fulfill({
+      json: {
+        "nicholaswilde/cyd-weather-station": {
+          cyd_28c: ["v0.2.0-rc.1", "v0.1.42", "v0.1.41"],
+        },
+      },
+    });
+  });
+
+  // 1. Prefill repo, device, version=latest, autoload=true, and custom addresses
+  await page.goto(
+    "/index.html?repo=nicholaswilde/cyd-weather-station&device=cyd_28c&version=latest&autoload=true&bootloaderAddress=0x0&firmwareAddress=0x20000&partitionsAddress=0x9000",
+  );
+
+  const repoSelect = page.locator("#github-repo-select");
+  const deviceSelect = page.locator("#github-device-select");
+  const versionSelect = page.locator("#github-version-select");
+  const prereleaseCheckbox = page.locator("#github-prerelease-checkbox");
+  const fetchBtn = page.locator("#fetch-github-btn");
+  const helpBtn = page.locator("#help-github-btn");
+  const installBtn = page.locator("esp-web-install-button");
+
+  await expect(repoSelect).toHaveValue("nicholaswilde/cyd-weather-station");
+  await expect(deviceSelect).toHaveValue("cyd_28c");
+  await expect(versionSelect).toHaveValue("v0.1.42");
+  await expect(prereleaseCheckbox).not.toBeChecked();
+  await expect(fetchBtn).toBeEnabled();
+  await expect(helpBtn).toBeEnabled();
+  await expect(fetchBtn).toHaveText("Loaded: v0.1.42");
+
+  const manifestAttr = await installBtn.getAttribute("manifest");
+  expect(decodeURIComponent(manifestAttr)).toContain('"version":"v0.1.42"');
+
+  await expect(page.locator("#bootloader-address")).toHaveValue("0x0");
+  await expect(page.locator("#firmware-address")).toHaveValue("0x20000");
+  await expect(page.locator("#partitions-address")).toHaveValue("0x9000");
+
+  // 2. Explicit pre-release version auto-enables prerelease checkbox
+  await page.goto(
+    "/index.html?repo=cyd-weather-station&device=cyd_28c&version=v0.2.0-rc.1",
+  );
+
+  await expect(repoSelect).toHaveValue("nicholaswilde/cyd-weather-station");
+  await expect(deviceSelect).toHaveValue("cyd_28c");
+  await expect(prereleaseCheckbox).toBeChecked();
+  await expect(versionSelect).toHaveValue("v0.2.0-rc.1");
+  await expect(fetchBtn).toHaveText("Load Release");
+
+  // 3. Invalid params degrade gracefully without errors
+  const pageErrors = [];
+  page.on("pageerror", (err) => pageErrors.push(err.message));
+
+  await page.goto("/index.html?repo=missing/repo&device=nope&version=v9.9.9");
+  await page.waitForFunction(() => {
+    const select = document.getElementById("github-repo-select");
+    return select && select.options.length > 1;
+  });
+
+  await expect(repoSelect).toHaveValue("");
+  await expect(deviceSelect).toBeDisabled();
+  await expect(versionSelect).toBeDisabled();
+  await expect(fetchBtn).toBeDisabled();
+  expect(pageErrors).toEqual([]);
+});
